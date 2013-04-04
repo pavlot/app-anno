@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import co.usersource.anno.view.FeedbackViewInterface;
 import co.usersource.anno.view.viewobject.CommentFeedback;
-import co.usersource.anno.view.viewobject.FeedbackItem;
+import co.usersource.anno.view.viewobject.Feedback;
 
 /**
  * Presenter class for feedback activity, interact with feedback views and
@@ -25,13 +25,14 @@ public class FeedbackPresenter {
     this.view = view;
   }
 
-  public void sendFeedback(Bitmap screenshot, List<FeedbackItem> feedbackList) {
+  public void sendFeedback(Bitmap screenshot, List<Feedback> feedbackList) {
     Log.d(TAG, "send feedback.");
-    for (FeedbackItem feedback : feedbackList) {
+    for (Feedback feedback : feedbackList) {
       if (feedback instanceof CommentFeedback) {
-        // TODO:
+        // TODO: insert comment feedback into database.
       }
     }
+    // TODO: call view to return to home screen.
   }
 
 }

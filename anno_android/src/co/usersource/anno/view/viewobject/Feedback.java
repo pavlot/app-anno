@@ -8,6 +8,6 @@ package co.usersource.anno.view.viewobject;
  * @author Leo
  * 
  */
-public abstract class FeedbackItem {
+public abstract class Feedback {
 
 }

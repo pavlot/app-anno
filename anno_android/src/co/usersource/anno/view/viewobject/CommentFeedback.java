@@ -8,7 +8,7 @@ package co.usersource.anno.view.viewobject;
  * @author Leo
  * 
  */
-public class CommentFeedback extends FeedbackItem {
+public class CommentFeedback extends Feedback {
 
   /**
    * Comment content.

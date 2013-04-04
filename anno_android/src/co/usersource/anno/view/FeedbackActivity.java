@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,7 +19,7 @@ import android.widget.ImageView;
 import co.usersource.anno.R;
 import co.usersource.anno.presenter.FeedbackPresenter;
 import co.usersource.anno.view.viewobject.CommentFeedback;
-import co.usersource.anno.view.viewobject.FeedbackItem;
+import co.usersource.anno.view.viewobject.Feedback;
 
 public class FeedbackActivity extends Activity implements FeedbackViewInterface {
 
@@ -42,7 +43,10 @@ public class FeedbackActivity extends Activity implements FeedbackViewInterface 
     setContentView(R.layout.feedback_activity);
 
     setComponents();
+    handleIntent();
+  }
 
+  private void handleIntent() {
     Intent intent = getIntent();
     String action = intent.getAction();
     String type = intent.getType();
@@ -63,11 +67,12 @@ public class FeedbackActivity extends Activity implements FeedbackViewInterface 
       @Override
       public void onClick(View view) {
         String comment = etComment.getText().toString();
-        List<FeedbackItem> feedbackList = new ArrayList<FeedbackItem>();
+        List<Feedback> feedbackList = new ArrayList<Feedback>();
         // TODO: get and set circle position.
         feedbackList.add(new CommentFeedback(comment, 0, 0));
-//        imvScreenshot.getd
-//        presenter.sendFeedback(feedbackList);
+        Bitmap screenshot = null;
+        // TODO: get bitmap from imageview.
+        presenter.sendFeedback(screenshot, feedbackList);
       }
 
     });

@@ -9,7 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 /**
- * @author LeoRen
+ * @author Leo
  * 
  */
 public class AnnoContentProvider extends ContentProvider {
