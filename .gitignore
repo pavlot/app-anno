@@ -3,7 +3,5 @@
 .classpath
 *~
 *.swp
-build
 bin
-target
 .metadata

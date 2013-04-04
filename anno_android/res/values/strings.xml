@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Anno</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_feedback">FeedbackActivity</string>
+
+    <!-- action button names on action bar of FeedbackActivity -->
+    <string name="feedback_comment">Comment</string>
+    <string name="feedback_draw">Draw</string>
+    <string name="feedback_audio">Audio</string>
+
+</resources>
