@@ -46,6 +46,10 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
+        /**  error message 
+         */
+        public static final int fail_create_directory=0x7f050006;
+        public static final int fail_enough_sdcard_space=0x7f050007;
         public static final int feedback_audio=0x7f050005;
         /**  action button names on action bar of FeedbackActivity 
          */

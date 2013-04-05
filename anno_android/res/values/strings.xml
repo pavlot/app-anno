@@ -10,4 +10,8 @@
     <string name="feedback_draw">Draw</string>
     <string name="feedback_audio">Audio</string>
 
+    <!-- error message -->
+    <string name="fail_create_directory">Create directory %s failed.</string>
+    <string name="fail_enough_sdcard_space">No enough space on SD card.</string>
+
 </resources>
