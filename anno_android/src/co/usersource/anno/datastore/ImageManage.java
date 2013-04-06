@@ -10,7 +10,7 @@ import android.graphics.Bitmap;
 /**
  * Interface for manipulate images.
  * 
- * @author Leo
+ * @author topcircler
  * 
  */
 public interface ImageManage {

@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
  * Classes that implement this interface provide methods which allow simplify
  * table management routines.
  * 
- * @author leo
+ * @author topcircler
  * 
  */
 public interface TableAdapter {

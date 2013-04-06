@@ -15,7 +15,7 @@ import co.usersource.anno.R;
 /**
  * System Utilities.
  * 
- * @author LeoRen
+ * @author topcircler
  * 
  */
 public class SystemUtils {

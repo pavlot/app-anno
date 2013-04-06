@@ -13,7 +13,9 @@ import android.os.Environment;
 import android.util.Log;
 
 /**
- * @author Leo
+ * Application configurations。
+ * 
+ * @author topcircler
  * 
  */
 public final class AppConfig {

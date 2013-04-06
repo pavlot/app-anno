@@ -21,7 +21,7 @@ import co.usersource.anno.utils.SystemUtils;
  * Implement ImageManage interface, it saves and loads images from SD card data
  * directory.
  * 
- * @author Leo
+ * @author topcircler
  * 
  */
 public class FileImageManage implements ImageManage {

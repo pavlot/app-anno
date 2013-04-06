@@ -12,17 +12,20 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * @author Leo
+ * Table adapter for comment manipulation.
+ * 
+ * @author topcircler
  * 
  */
 public class TableCommentFeedbackAdapter extends AbstractTableAdapter {
+  // TODO: when to close database connection.
 
   /* table column names. */
   public static final String COL_ID = "_id";
   public static final String COL_COMMENT = "comment";
   public static final String COL_SCREENSHOT_KEY = "screenshot_key";
 
-  private static final String TABLE_NAME = "feedback_comment";
+  public static final String TABLE_NAME = "feedback_comment";
 
   public TableCommentFeedbackAdapter(SQLiteOpenHelper sqliteOpenHelper) {
     super(sqliteOpenHelper);

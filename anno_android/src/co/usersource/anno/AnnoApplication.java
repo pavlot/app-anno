@@ -9,7 +9,7 @@ import co.usersource.anno.utils.AppConfig;
 /**
  * Global application data.
  * 
- * @author Leo
+ * @author topcircler
  * 
  */
 public class AnnoApplication extends Application {

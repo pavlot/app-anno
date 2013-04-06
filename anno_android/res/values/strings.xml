@@ -9,9 +9,15 @@
     <string name="feedback_comment">Comment</string>
     <string name="feedback_draw">Draw</string>
     <string name="feedback_audio">Audio</string>
+    
+    <string name="send_comment">Send</string>
 
     <!-- error message -->
+    <string name="erorr_title">Error</string>
     <string name="fail_create_directory">Create directory %s failed.</string>
     <string name="fail_enough_sdcard_space">No enough space on SD card.</string>
+
+    <!-- success message -->
+    <string name="success_send_comment">Send comment successfully.</string>
 
 </resources>

@@ -11,12 +11,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  * This class intends to provide access and creation routines for Anno program
  * database.
  * 
- * @author Leo
+ * @author topcircler
  * 
  */
 public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
 
-  /** Database name. */
   public static final String DATABASE_NAME = "anno.db";
   /** Version for upgrade routines. */
   public static final int DATABASE_VERSION = 1;

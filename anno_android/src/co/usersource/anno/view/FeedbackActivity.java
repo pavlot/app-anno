@@ -1,14 +1,18 @@
 package co.usersource.anno.view;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,30 +21,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import co.usersource.anno.R;
-import co.usersource.anno.presenter.FeedbackPresenter;
-import co.usersource.anno.view.viewobject.CommentFeedback;
-import co.usersource.anno.view.viewobject.Feedback;
+import co.usersource.anno.datastore.FileImageManage;
+import co.usersource.anno.datastore.ImageManage;
+import co.usersource.anno.datastore.TableCommentFeedbackAdapter;
+import co.usersource.anno.model.AnnoContentProvider;
+import co.usersource.anno.utils.ImageUtils;
+import co.usersource.anno.utils.ViewUtils;
 
-public class FeedbackActivity extends Activity implements FeedbackViewInterface {
+public class FeedbackActivity extends Activity {
 
   private static final String TAG = "FeedbackActivity";
 
-  private FeedbackPresenter presenter;
+  private ImageManage imageManage;
+  private AsyncHandler handler;
 
+  // components.
   private ImageView imvScreenshot;
   private ActionBar actionBar;
-
   private EditText etComment;
   private Button btnComment;
 
-  public FeedbackActivity() {
-    presenter = new FeedbackPresenter(this);
-  }
+  private static final int TOKEN_INSERT_COMMENT = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.feedback_activity);
+
+    imageManage = new FileImageManage(this);
+    handler = new AsyncHandler(getContentResolver(), getApplicationContext());
 
     setComponents();
     handleIntent();
@@ -66,13 +75,22 @@ public class FeedbackActivity extends Activity implements FeedbackViewInterface 
 
       @Override
       public void onClick(View view) {
-        String comment = etComment.getText().toString();
-        List<Feedback> feedbackList = new ArrayList<Feedback>();
-        // TODO: get and set circle position.
-        feedbackList.add(new CommentFeedback(comment, 0, 0));
-        Bitmap screenshot = null;
-        // TODO: get bitmap from imageview.
-        presenter.sendFeedback(screenshot, feedbackList);
+        try {
+          String comment = etComment.getText().toString();
+          Bitmap bitmap = ImageUtils.compressBitmap(ImageUtils
+              .getBitmapFromImageView(imvScreenshot));
+          String imageKey;
+          imageKey = imageManage.saveImage(bitmap);
+
+          ContentValues values = new ContentValues();
+          values.put(TableCommentFeedbackAdapter.COL_COMMENT, comment);
+          values.put(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY, imageKey);
+          handler.startInsert(TOKEN_INSERT_COMMENT, null,
+              AnnoContentProvider.COMMENT_PATH_URI, values);
+        } catch (IOException e) {
+          Log.e(TAG, e.getMessage());
+          ViewUtils.displayError(FeedbackActivity.this, e.getMessage());
+        }
       }
 
     });
@@ -107,4 +125,26 @@ public class FeedbackActivity extends Activity implements FeedbackViewInterface 
       imvScreenshot.setImageURI(imageUri);
     }
   }
+
+  private static class AsyncHandler extends AsyncQueryHandler {
+
+    private Context context;
+
+    public AsyncHandler(ContentResolver cr, Context context) {
+      super(cr);
+      this.context = context;
+    }
+
+    @Override
+    protected void onInsertComplete(int token, Object cookie, Uri uri) {
+      super.onInsertComplete(token, cookie, uri);
+
+      if (token == TOKEN_INSERT_COMMENT) {
+        Log.d(TAG,
+            "insert comment successfully. inserted uri:" + uri.toString());
+        ViewUtils.displayInfo(context, R.string.success_send_comment);
+      }
+    }
+
+  };
 }

@@ -14,17 +14,19 @@
         android:layout_height="match_parent" />
 
     <!-- for test -->
+
     <EditText
         android:id="@+id/etComment"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
         android:visibility="gone" />
 
     <Button
         android:id="@+id/btnComment"
         android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_height="40dp"
         android:layout_toRightOf="@id/etComment"
+        android:text="@string/send_comment"
         android:visibility="gone" />
     <!-- end for test -->
 

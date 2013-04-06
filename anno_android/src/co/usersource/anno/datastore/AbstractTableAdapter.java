@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Abstract table adapter.
  * 
- * @author Leo
+ * @author topcircler
  * 
  */
 public abstract class AbstractTableAdapter implements TableAdapter {
