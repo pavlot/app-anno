@@ -12,7 +12,7 @@ import android.widget.ImageView;
  * @author topcircler
  * 
  */
-public class ImageUtils {
+public final class ImageUtils {
 
   /**
    * Get bitmap from image view.
@@ -29,10 +29,14 @@ public class ImageUtils {
   }
 
   /**
-   * Compress image.
+   * Compress the given bitmap and return a compressed one.
+   * 
+   * @param bitmap
+   *          original bitmap.
+   * @return compressed bitmap.
    */
   public static Bitmap compressBitmap(Bitmap bitmap) {
-    // TODO:
+    // TODO: implement compress bitmap.
     return bitmap;
   }
 

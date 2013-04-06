@@ -35,6 +35,7 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
 
   @Override
   public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+    // initial version, not need to upgrade.
   }
 
   /**
@@ -42,6 +43,15 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
    */
   public TableAdapter getTableCommentFeedbackAdapter() {
     return tableCommentFeedbackAdapter;
+  }
+
+  /**
+   * Close database connection.
+   */
+  public void close() {
+    if (getWritableDatabase().isOpen()) {
+      getWritableDatabase().close();
+    }
   }
 
 }

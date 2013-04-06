@@ -1,13 +1,13 @@
 package co.usersource.anno.view;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -28,28 +28,39 @@ import co.usersource.anno.model.AnnoContentProvider;
 import co.usersource.anno.utils.ImageUtils;
 import co.usersource.anno.utils.ViewUtils;
 
-public class FeedbackActivity extends Activity {
+/**
+ * Edit feedback screen from share intent.
+ * 
+ * You can add comment for the chosen screenshot.
+ * 
+ * @author topcircler
+ * 
+ */
+public class FeedbackEditActivity extends Activity {
 
   private static final String TAG = "FeedbackActivity";
 
   private ImageManage imageManage;
   private AsyncHandler handler;
 
-  // components.
+  // view components.
   private ImageView imvScreenshot;
   private ActionBar actionBar;
   private EditText etComment;
   private Button btnComment;
 
+  /**
+   * token id represents inserting a comment in an async process.
+   */
   private static final int TOKEN_INSERT_COMMENT = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.feedback_activity);
+    setContentView(R.layout.feedback_edit_activity);
 
     imageManage = new FileImageManage(this);
-    handler = new AsyncHandler(getContentResolver(), getApplicationContext());
+    handler = new AsyncHandler(getContentResolver(), this);
 
     setComponents();
     handleIntent();
@@ -71,6 +82,7 @@ public class FeedbackActivity extends Activity {
     imvScreenshot = (ImageView) findViewById(R.id.imvScreenshot);
     etComment = (EditText) findViewById(R.id.etComment);
     btnComment = (Button) findViewById(R.id.btnComment);
+    actionBar = getActionBar();
     btnComment.setOnClickListener(new OnClickListener() {
 
       @Override
@@ -89,12 +101,16 @@ public class FeedbackActivity extends Activity {
               AnnoContentProvider.COMMENT_PATH_URI, values);
         } catch (IOException e) {
           Log.e(TAG, e.getMessage());
-          ViewUtils.displayError(FeedbackActivity.this, e.getMessage());
+          ViewUtils.displayError(FeedbackEditActivity.this, e.getMessage());
+        } catch (Exception e) {
+          // catch other exceptions, such as SQLException.
+          Log.e(TAG, e.getMessage());
+          ViewUtils.displayError(FeedbackEditActivity.this,
+              R.string.fail_send_comment);
         }
       }
 
     });
-    actionBar = getActionBar();
   }
 
   @Override
@@ -128,11 +144,11 @@ public class FeedbackActivity extends Activity {
 
   private static class AsyncHandler extends AsyncQueryHandler {
 
-    private Context context;
+    private WeakReference<Activity> activityRef;
 
-    public AsyncHandler(ContentResolver cr, Context context) {
+    public AsyncHandler(ContentResolver cr, Activity activity) {
       super(cr);
-      this.context = context;
+      this.activityRef = new WeakReference<Activity>(activity);
     }
 
     @Override
@@ -142,9 +158,10 @@ public class FeedbackActivity extends Activity {
       if (token == TOKEN_INSERT_COMMENT) {
         Log.d(TAG,
             "insert comment successfully. inserted uri:" + uri.toString());
-        ViewUtils.displayInfo(context, R.string.success_send_comment);
+        ViewUtils.displayInfo(activityRef.get(), R.string.success_send_comment);
       }
     }
 
-  };
+  }
+
 }

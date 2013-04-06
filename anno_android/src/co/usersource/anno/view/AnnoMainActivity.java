@@ -1,5 +1,7 @@
 package co.usersource.anno.view;
 
+import android.content.ContentUris;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +19,13 @@ import co.usersource.anno.R;
 import co.usersource.anno.datastore.TableCommentFeedbackAdapter;
 import co.usersource.anno.model.AnnoContentProvider;
 
+/**
+ * Home screen. Displays a list of all comments, by clicking any comment,
+ * comment detail can be viewed.
+ * 
+ * @author topcircler
+ * 
+ */
 public class AnnoMainActivity extends FragmentActivity implements
     LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
   /*
@@ -26,11 +35,19 @@ public class AnnoMainActivity extends FragmentActivity implements
    */
 
   private static final String TAG = AnnoMainActivity.class.getSimpleName();
+
+  /**
+   * which fields to display in the list.
+   */
   private static final String[] PROJECTION = {
       TableCommentFeedbackAdapter.COL_ID,
       TableCommentFeedbackAdapter.COL_COMMENT };
+  /**
+   * id to represent a loader process.
+   */
   private static final int URL_LOADER_COMMENTS = 0;
 
+  // view components.
   private SimpleCursorAdapter adapter;
   private ListView feedbackListView;
 
@@ -40,7 +57,6 @@ public class AnnoMainActivity extends FragmentActivity implements
     setContentView(R.layout.main);
 
     setComponent();
-    loadComments();
   }
 
   private void setComponent() {
@@ -53,6 +69,9 @@ public class AnnoMainActivity extends FragmentActivity implements
     feedbackListView.setOnItemClickListener(this);
   }
 
+  /**
+   * Loads all comments and display in this list once loads completes.
+   */
   private void loadComments() {
     getSupportLoaderManager().initLoader(URL_LOADER_COMMENTS, null, this);
     Log.d(TAG, "start query comments.");
@@ -66,19 +85,15 @@ public class AnnoMainActivity extends FragmentActivity implements
   }
 
   @Override
-  protected void onRestart() {
-    super.onRestart();
+  protected void onStart() {
+    super.onStart();
     loadComments();
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if (adapter != null) {
-      if (adapter.getCursor() != null) {
-        adapter.getCursor().close();
-      }
-    }
+    // no need to close cursor here, since it's already done in onLoaderReset().
   }
 
   @Override
@@ -113,7 +128,9 @@ public class AnnoMainActivity extends FragmentActivity implements
   public void onItemClick(AdapterView<?> adapterView, View v, int position,
       long id) {
     Log.d(TAG, String.format("item %s(id:%d) was clicked.", position, id));
-    // TODO:
+    Intent intent = new Intent(this, FeedbackViewActivity.class);
+    intent.putExtra(AnnoContentProvider.COMMENT_PATH,
+        ContentUris.withAppendedId(AnnoContentProvider.COMMENT_PATH_URI, id));
+    startActivity(intent);
   }
-
 }

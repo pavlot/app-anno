@@ -26,10 +26,12 @@ public class AnnoContentProvider extends ContentProvider {
   public static final String COMMENT_PATH = TableCommentFeedbackAdapter.TABLE_NAME;
   public static final Uri COMMENT_PATH_URI = Uri.parse("content://" + AUTHORITY
       + "/" + COMMENT_PATH);
+  /** code that represents operation on one comment. */
   private static final int SINGLE_COMMENT_CODE = 1;
+  /** code that represents operation on all comments. */
   private static final int COMMENT_CODE = 2;
 
-  /* type definitions */
+  /* MIME type definitions */
   private static final String TABLE_MIME_TYPE = "vnd";
   private static final String TABLE_MIME_SUBTYPE_FOR_ROW = "android.cursor.item/";
   private static final String TABLE_MIME_SUBTYPE_FOR_ROWS = "android.cursor.dir/";
@@ -62,6 +64,9 @@ public class AnnoContentProvider extends ContentProvider {
     case SINGLE_COMMENT_CODE:
       return TABLE_MIME_TYPE + "." + TABLE_MIME_SUBTYPE_FOR_ROW + "/"
           + TABLE_NAME_PROVIDER_SPECIFIC + "." + COMMENT_PATH;
+    case COMMENT_CODE:
+      return TABLE_MIME_TYPE + "." + TABLE_MIME_SUBTYPE_FOR_ROWS + "/"
+          + TABLE_NAME_PROVIDER_SPECIFIC + "." + COMMENT_PATH;
     default:
       handleUnknownUri(uri, code);
     }
@@ -78,7 +83,11 @@ public class AnnoContentProvider extends ContentProvider {
       if (newId != -1) {
         return ContentUris.withAppendedId(COMMENT_PATH_URI, newId);
       }
-      throw new SQLException();
+      /*
+       * up level api should catch this exception, and handle it themselves.
+       */
+      throw new SQLException(String.format("insert comment(uri:%s) failed.",
+          uri.toString()));
     default:
       handleUnknownUri(uri, code);
     }
@@ -93,6 +102,11 @@ public class AnnoContentProvider extends ContentProvider {
     case COMMENT_CODE:
       return annoSQLiteOpenHelper.getTableCommentFeedbackAdapter().query(
           projection, selection, selectionArgs, sortOrder);
+    case SINGLE_COMMENT_CODE:
+      String[] args = { uri.getLastPathSegment() };
+      String selectionExpr = TableCommentFeedbackAdapter.COL_ID + " = ?";
+      return annoSQLiteOpenHelper.getTableCommentFeedbackAdapter().query(
+          projection, selectionExpr, args, sortOrder);
     default:
       handleUnknownUri(uri, code);
     }
@@ -113,7 +127,16 @@ public class AnnoContentProvider extends ContentProvider {
     return 0;
   }
 
-  private String handleUnknownUri(Uri uri, int matchCode)
+  /**
+   * Handle the unknown uri.
+   * 
+   * @param uri
+   *          uri.
+   * @param matchCode
+   *          matched code.
+   * @throws UnknownUriException
+   */
+  private void handleUnknownUri(Uri uri, int matchCode)
       throws UnknownUriException {
     throw new UnknownUriException(uri, matchCode, String.format(
         "Unknown uri(%s) code(%s).", uri.toString(), matchCode));

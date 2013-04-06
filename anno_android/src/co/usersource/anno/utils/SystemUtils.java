@@ -18,7 +18,7 @@ import co.usersource.anno.R;
  * @author topcircler
  * 
  */
-public class SystemUtils {
+public final class SystemUtils {
 
   /**
    * Check if SD card is mounted.
