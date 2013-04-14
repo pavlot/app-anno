@@ -22,4 +22,7 @@
     <string name="title_activity_feedback_view">FeedbackViewActivity</string>
     <string name="hello_world">Hello world!</string>
 
+    <!-- text hint -->
+    <string name="comment_hint">Enter comment here.</string>
+
 </resources>

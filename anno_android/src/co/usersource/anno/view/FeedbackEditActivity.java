@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import co.usersource.anno.R;
 import co.usersource.anno.datastore.FileImageManage;
 import co.usersource.anno.datastore.ImageManage;
@@ -44,6 +45,7 @@ public class FeedbackEditActivity extends Activity {
   private AsyncHandler handler;
 
   // view components.
+  private RelativeLayout commentAreaLayout;
   private ImageView imvScreenshot;
   private ActionBar actionBar;
   private EditText etComment;
@@ -82,6 +84,7 @@ public class FeedbackEditActivity extends Activity {
     imvScreenshot = (ImageView) findViewById(R.id.imvScreenshot);
     etComment = (EditText) findViewById(R.id.etComment);
     btnComment = (Button) findViewById(R.id.btnComment);
+    commentAreaLayout = (RelativeLayout) findViewById(R.id.commentArea);
     actionBar = getActionBar();
     btnComment.setOnClickListener(new OnClickListener() {
 
@@ -125,8 +128,7 @@ public class FeedbackEditActivity extends Activity {
     switch (item.getItemId()) {
     case R.id.feedback_action_comment:
       actionBar.hide();
-      etComment.setVisibility(View.VISIBLE);
-      btnComment.setVisibility(View.VISIBLE);
+      commentAreaLayout.setVisibility(View.VISIBLE);
       return true;
     case R.id.feedback_action_draw:
     case R.id.feedback_action_audio:
@@ -159,6 +161,11 @@ public class FeedbackEditActivity extends Activity {
         Log.d(TAG,
             "insert comment successfully. inserted uri:" + uri.toString());
         ViewUtils.displayInfo(activityRef.get(), R.string.success_send_comment);
+        // jump to home screen.
+        activityRef.get().finish();
+        Intent homeIntent = new Intent(activityRef.get(),
+            AnnoMainActivity.class);
+        activityRef.get().startActivity(homeIntent);
       }
     }
 

@@ -16,6 +16,21 @@
     <style name="AppTheme" parent="AppBaseTheme">
       <!-- All customizations that are NOT specific to a particular API-level can go here. -->
       <item name="android:windowFullscreen">true</item>
+      <item name="android:windowActionBarOverlay">true</item>
+      <item name="android:actionBarStyle">@style/ActionBar</item>
+      <item name="android:actionBarSplitStyle">@style/SplitActionBar</item>
+    </style>
+    
+    <style name="ActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">#90000000</item>
+    </style>
+    
+    <style name="SplitActionBar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:backgroundSplit">#90000000</item>
+    </style>
+    
+    <style name="AppTheme.transparent" parent="AppBaseTheme">
+      <item name="android:windowFullscreen">true</item>
     </style>
 
 </resources>

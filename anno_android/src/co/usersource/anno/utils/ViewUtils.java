@@ -24,7 +24,7 @@ public final class ViewUtils {
    * this implementation if you want to change the way to display information.
    */
   public static void displayInfo(Context context, int resId) {
-    Toast.makeText(context, resId, Toast.LENGTH_LONG).show();
+    Toast.makeText(context, resId, Toast.LENGTH_SHORT).show();
   }
 
   /**
@@ -69,5 +69,31 @@ public final class ViewUtils {
     new AlertDialog.Builder(context).setTitle(R.string.erorr_title)
         .setMessage(resId).setNeutralButton(android.R.string.ok, listener)
         .show();
+  }
+
+  /**
+   * Convert from dp to px according to phone resolution.
+   * 
+   * @param context
+   * @param dpValue
+   *          dp value.
+   * @return px value.
+   */
+  public static int dip2px(Context context, float dpValue) {
+    final float scale = context.getResources().getDisplayMetrics().density;
+    return (int) (dpValue * scale + 0.5f);
+  }
+
+  /**
+   * Convert from px to dip according to phone resolution.
+   * 
+   * @param context
+   * @param pxValue
+   *          px value.
+   * @return dip value.
+   */
+  public static int px2dip(Context context, float pxValue) {
+    final float scale = context.getResources().getDisplayMetrics().density;
+    return (int) (pxValue / scale + 0.5f);
   }
 }
