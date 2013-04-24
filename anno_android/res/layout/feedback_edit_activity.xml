@@ -30,12 +30,14 @@
                 anno:arrow_border_color="@color/commentbox_border"
                 anno:arrow_left="110dp"
                 anno:arrow_left_right_space="@dimen/comment_arrow_space"
+                anno:arrow_on_top="true"
                 anno:circle_background_color="@color/circle_background"
                 anno:circle_border_color="@color/circle_border"
                 anno:circle_left="110dp"
                 anno:circle_radius="20dp" />
 
             <LinearLayout
+                android:id="@+id/comment_action_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/circleArrow"

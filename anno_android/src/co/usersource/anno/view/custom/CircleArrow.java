@@ -39,6 +39,7 @@ public class CircleArrow extends View implements View.OnTouchListener {
   private float circleLeft;
   private float arrowLeft;
   private float arrowLeftRightSpace;
+  private boolean arrowOnTop;
 
   private Paint paint;
   private Path path;
@@ -72,6 +73,7 @@ public class CircleArrow extends View implements View.OnTouchListener {
         DEFAULT_CIRCLE_LEFT);
     arrowLeftRightSpace = a.getDimension(
         R.styleable.CommentArea_arrow_left_right_space, DEFAULT_CIRCLE_RADIUS);
+    arrowOnTop = a.getBoolean(R.styleable.CommentArea_arrow_on_top, true);
 
     paint = new Paint();
     paint.setAntiAlias(true);
@@ -94,17 +96,69 @@ public class CircleArrow extends View implements View.OnTouchListener {
     int width = this.getWidth();
     int height = this.getHeight();
 
-    drawCircle(canvas, width);
-
-    // draw right edge
-    drawRightLine(canvas, height);
-    // draw left edge
-    drawLeftLine(canvas, height);
-    // draw triangle
-    drawTriangle(canvas, height);
+    if (arrowOnTop) {
+      drawCircleTop(canvas);
+      drawRightLineTop(canvas, height);
+      drawLeftLineTop(canvas, height);
+      drawTriangleTop(canvas, height);
+    } else {
+      drawCircleBottom(canvas, height);
+      drawRightLineBottom(canvas, height);
+      drawLeftLineBottom(canvas, height);
+      drawTriangleBottom(canvas, height);
+    }
   }
 
-  private void drawTriangle(Canvas canvas, int height) {
+  private void drawTriangleBottom(Canvas canvas, int height) {
+    paint.setColor(arrowBackgroundColor);
+    path.reset();
+    path.moveTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    path.lineTo(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, 0);
+    path.lineTo(arrowLeft + BORDER_WIDTH, 0);
+    path.lineTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    canvas.drawPath(path, paint);
+    path.close();
+  }
+
+  private void drawLeftLineBottom(Canvas canvas, int height) {
+    paint.setColor(arrowBorderColor);
+    path.reset();
+    path.moveTo(circleLeft + circleRadius, height - circleRadius);
+    path.lineTo(arrowLeft, 0);
+    path.lineTo(arrowLeft + BORDER_WIDTH, 0);
+    path.lineTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    path.lineTo(circleLeft + circleRadius, height - circleRadius);
+    canvas.drawPath(path, paint);
+  }
+
+  private void drawRightLineBottom(Canvas canvas, int height) {
+    paint.setColor(arrowBorderColor);
+    path.reset();
+    path.moveTo(circleLeft + circleRadius, height - circleRadius);
+    path.lineTo(arrowLeft + arrowLeftRightSpace, 0);
+    path.lineTo(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, 0);
+    path.lineTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    path.lineTo(circleLeft + circleRadius, height - circleRadius);
+    canvas.drawPath(path, paint);
+  }
+
+  private void drawCircleBottom(Canvas canvas, int height) {
+    // draw outer border
+    paint.setStyle(Style.STROKE);
+    paint.setStrokeWidth(BORDER_WIDTH);
+    paint.setColor(circleBorderColor);
+    canvas.drawCircle(circleLeft + circleRadius, height - circleRadius,
+        circleRadius - BORDER_WIDTH / 2, paint);
+
+    // draw inner circle
+    paint.setStyle(Style.FILL);
+    float innerRadius = circleRadius - BORDER_WIDTH;
+    paint.setColor(circleBackgroundColor);
+    canvas.drawCircle(circleLeft + circleRadius, height - circleRadius,
+        innerRadius, paint);
+  }
+
+  private void drawTriangleTop(Canvas canvas, int height) {
     paint.setColor(arrowBackgroundColor);
     path.reset();
     path.moveTo(circleLeft + circleRadius, circleRadius + BORDER_WIDTH);
@@ -115,7 +169,7 @@ public class CircleArrow extends View implements View.OnTouchListener {
     path.close();
   }
 
-  private void drawLeftLine(Canvas canvas, int height) {
+  private void drawLeftLineTop(Canvas canvas, int height) {
     paint.setColor(arrowBorderColor);
     path.reset();
     path.moveTo(circleLeft + circleRadius, circleRadius);
@@ -126,7 +180,7 @@ public class CircleArrow extends View implements View.OnTouchListener {
     canvas.drawPath(path, paint);
   }
 
-  private void drawRightLine(Canvas canvas, int height) {
+  private void drawRightLineTop(Canvas canvas, int height) {
     paint.setColor(arrowBorderColor);
     path.reset();
     path.moveTo(circleLeft + circleRadius, circleRadius);
@@ -137,7 +191,7 @@ public class CircleArrow extends View implements View.OnTouchListener {
     canvas.drawPath(path, paint);
   }
 
-  private void drawCircle(Canvas canvas, int width) {
+  private void drawCircleTop(Canvas canvas) {
     // draw outer border
     paint.setStyle(Style.STROKE);
     paint.setStrokeWidth(BORDER_WIDTH);
@@ -247,7 +301,13 @@ public class CircleArrow extends View implements View.OnTouchListener {
   public float getCircleRadius() {
     return circleRadius;
   }
-  
-  
+
+  /**
+   * @param arrowOnTop
+   *          the arrowOnTop to set
+   */
+  public void setArrowOnTop(boolean arrowOnTop) {
+    this.arrowOnTop = arrowOnTop;
+  }
 
 }
