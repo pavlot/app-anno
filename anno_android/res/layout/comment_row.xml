@@ -3,6 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/type_comment" >
+    </ImageView>
+
     <TextView
         android:id="@+id/commentLabel"
         android:layout_width="match_parent"
