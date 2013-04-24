@@ -6,10 +6,12 @@ package co.usersource.anno.utils;
 import java.io.File;
 import java.io.IOException;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
 import android.os.StatFs;
+import android.util.DisplayMetrics;
 import co.usersource.anno.R;
 
 /**
@@ -74,6 +76,12 @@ public final class SystemUtils {
             pathFile.getAbsolutePath()));
       }
     }
+  }
+
+  public static int[] resolution(Activity activity) {
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+    return new int[] { displayMetrics.widthPixels, displayMetrics.heightPixels };
   }
 
 }

@@ -1,61 +1,84 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:anno="http://schemas.android.com/apk/res/co.usersource.anno"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/orange"
     tools:context=".FeedbackEditActivity" >
 
-    <ImageView
+    <RelativeLayout
         android:id="@+id/imvScreenshot"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/content_margin" >
 
-    <RelativeLayout
-        android:id="@+id/commentArea"
-        android:layout_width="340dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:paddingTop="200dp"
-        android:visibility="gone" >
-
-        <co.usersource.anno.view.custom.CircleArrow
-            android:id="@+id/circleArrow"
-            android:layout_width="40dp"
-            android:layout_height="60dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="100dp" />
-
-        <co.usersource.anno.view.custom.EditTextLayout
-            android:id="@+id/input_area"
-            android:layout_width="270dp"
+        <co.usersource.anno.view.custom.CommentAreaLayout
+            android:id="@+id/commentArea"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/circleArrow"
-            android:background="@color/transparent_orange" >
+            android:layout_marginTop="@dimen/comment_area_marginTop_default"
+            android:visibility="gone"
+            anno:arrow_boundary="20dp" >
 
-            <EditText
-                android:id="@+id/etComment"
+            <co.usersource.anno.view.custom.CircleArrow
+                android:id="@+id/circleArrow"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/comment_indicate_height"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                anno:arrow_background_color="@color/transparent_white"
+                anno:arrow_border_color="@color/commentbox_border"
+                anno:arrow_left="110dp"
+                anno:arrow_left_right_space="@dimen/comment_arrow_space"
+                anno:circle_background_color="@color/circle_background"
+                anno:circle_border_color="@color/circle_border"
+                anno:circle_left="110dp"
+                anno:circle_radius="20dp" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:background="@null"
-                android:hint="@string/comment_hint"
-                android:inputType="textMultiLine"
-                android:maxLines="4"
-                android:minHeight="40dp"
-                android:padding="8dp"
-                android:textColor="@android:color/black"
-                android:textColorHint="@android:color/darker_gray" />
-        </co.usersource.anno.view.custom.EditTextLayout>
+                android:layout_below="@id/circleArrow"
+                android:layout_marginLeft="@dimen/comment_area_marginLeftRight"
+                android:layout_marginRight="@dimen/comment_area_marginLeftRight" >
 
-        <Button
-            android:id="@+id/btnComment"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_alignBottom="@id/input_area"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/send_comment_button"
-            android:hint="@string/send_comment" />
+                <co.usersource.anno.view.custom.EditTextLayout
+                    android:id="@+id/input_area"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/commentbox_background"
+                    anno:arrow_background_color="@color/transparent_white"
+                    anno:arrow_border_color="@color/commentbox_border"
+                    anno:arrow_left="100dp"
+                    anno:arrow_left_right_space="@dimen/comment_arrow_space"
+                    anno:arrow_on_top="true" >
+
+                    <EditText
+                        android:id="@+id/etComment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@null"
+                        android:hint="@string/comment_hint"
+                        android:inputType="textMultiLine"
+                        android:maxLines="4"
+                        android:minHeight="@dimen/comment_button_height"
+                        android:padding="8dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@android:color/darker_gray" />
+                </co.usersource.anno.view.custom.EditTextLayout>
+
+                <Button
+                    android:id="@+id/btnComment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/comment_button_height"
+                    android:layout_marginLeft="@dimen/comment_button_margin"
+                    android:background="@drawable/send_comment_button"
+                    android:text="@string/send_comment"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+        </co.usersource.anno.view.custom.CommentAreaLayout>
     </RelativeLayout>
 
 </RelativeLayout>

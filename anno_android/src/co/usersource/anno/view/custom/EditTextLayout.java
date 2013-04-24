@@ -4,12 +4,13 @@
 package co.usersource.anno.view.custom;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
-import co.usersource.anno.utils.ViewUtils;
+import co.usersource.anno.R;
 
 /**
  * @author topcircler
@@ -17,8 +18,15 @@ import co.usersource.anno.utils.ViewUtils;
  */
 public class EditTextLayout extends RelativeLayout {
 
-  Paint paint;
-  Path path;
+  private Paint paint;
+  private Path path;
+
+  private float arrowLeft;
+  private float arrowLeftRightSpace;
+  private boolean arrowOnTop;
+  private int arrowBackgroundColor;
+  private int arrowBorderColor;
+  private static final float BORDER_WIDTH = 6; // in px.
 
   /**
    * @param context
@@ -27,10 +35,24 @@ public class EditTextLayout extends RelativeLayout {
   public EditTextLayout(Context context, AttributeSet attrs) {
     super(context, attrs);
 
+    TypedArray a = context.obtainStyledAttributes(attrs,
+        R.styleable.CommentArea);
+    arrowLeft = a.getDimension(R.styleable.CommentArea_arrow_left, 100);
+    arrowLeftRightSpace = a.getDimension(
+        R.styleable.CommentArea_arrow_left_right_space, 40);
+    arrowOnTop = a.getBoolean(R.styleable.CommentArea_arrow_on_top, true);
+    arrowBackgroundColor = a.getColor(
+        R.styleable.CommentArea_arrow_background_color,
+        R.color.commentbox_background);
+    arrowBorderColor = a.getColor(R.styleable.CommentArea_arrow_border_color,
+        R.color.commentbox_border);
+
     this.setWillNotDraw(false);
 
     paint = new Paint();
     path = new Path();
+
+    a.recycle();
   }
 
   /*
@@ -43,33 +65,98 @@ public class EditTextLayout extends RelativeLayout {
 
     int width = this.getWidth();
     int height = this.getHeight();
-    int borderWidth = 6;
 
-    paint.setStrokeWidth(1);
-    path.reset();
-    paint.setColor(getResources().getColor(
-        co.usersource.anno.R.color.transparent_orange));
-    path.moveTo(borderWidth, borderWidth);
-    path.lineTo(width - borderWidth, 0);
-    path.lineTo(width - borderWidth, height - borderWidth);
-    path.lineTo(borderWidth, height - borderWidth);
-    path.lineTo(borderWidth, borderWidth);
-    canvas.drawPath(path, paint);
-    path.close();
+    drawBackground(canvas, width, height);
+    drawBorder(canvas, width, height);
 
-    paint.setStrokeWidth(borderWidth);
-    canvas.drawLine(ViewUtils.dip2px(getContext(), 100), borderWidth / 2,
-        ViewUtils.dip2px(getContext(), 140), borderWidth / 2, paint);
-    paint.setColor(getResources().getColor(android.R.color.black));
-    canvas.drawLine(0, borderWidth / 2, ViewUtils.dip2px(getContext(), 100)
-        + borderWidth, borderWidth / 2, paint);
-    canvas.drawLine(ViewUtils.dip2px(getContext(), 140) - borderWidth,
-        borderWidth / 2, width, borderWidth / 2, paint);
-    canvas.drawLine(width - borderWidth / 2, 0, width - borderWidth / 2,
-        height, paint);
-    canvas.drawLine(width, height - borderWidth / 2, 0, height - borderWidth
-        / 2, paint);
-    canvas.drawLine(borderWidth / 2, height, borderWidth / 2, 0, paint);
     super.dispatchDraw(canvas);
   }
+
+  private void drawBorder(Canvas canvas, int width, int height) {
+    paint.setColor(arrowBackgroundColor);
+    paint.setStrokeWidth(BORDER_WIDTH);
+    if (arrowOnTop) {
+      canvas.drawLine(arrowLeft, BORDER_WIDTH / 2, arrowLeft
+          + arrowLeftRightSpace, BORDER_WIDTH / 2, paint);
+    } else {
+      canvas.drawLine(arrowLeft, height - BORDER_WIDTH / 2, arrowLeft
+          + arrowLeftRightSpace, height - BORDER_WIDTH, paint);
+    }
+
+    paint.setColor(arrowBorderColor);
+    canvas.drawLine(BORDER_WIDTH / 2, 0, BORDER_WIDTH / 2, height, paint);
+    canvas.drawLine(width - BORDER_WIDTH / 2, 0, width - BORDER_WIDTH / 2,
+        height, paint);
+    if (arrowOnTop) {
+      canvas.drawLine(0, BORDER_WIDTH / 2, arrowLeft + BORDER_WIDTH,
+          BORDER_WIDTH / 2, paint);
+      canvas.drawLine(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH,
+          BORDER_WIDTH / 2, width, BORDER_WIDTH / 2, paint);
+    } else {
+      canvas.drawLine(0, BORDER_WIDTH / 2, width, BORDER_WIDTH / 2, paint);
+    }
+    if (arrowOnTop) {
+      canvas.drawLine(0, height - BORDER_WIDTH / 2, width, height
+          - BORDER_WIDTH / 2, paint);
+    } else {
+      canvas.drawLine(0, height - BORDER_WIDTH / 2, arrowLeft + BORDER_WIDTH,
+          height - BORDER_WIDTH / 2, paint);
+      canvas.drawLine(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, height
+          - BORDER_WIDTH / 2, width, height - BORDER_WIDTH / 2, paint);
+    }
+  }
+
+  private void drawBackground(Canvas canvas, int width, int height) {
+    paint.setStrokeWidth(1);
+    path.reset();
+    paint.setColor(arrowBackgroundColor);
+    path.moveTo(BORDER_WIDTH, BORDER_WIDTH);
+    path.lineTo(width - BORDER_WIDTH, BORDER_WIDTH);
+    path.lineTo(width - BORDER_WIDTH, height - BORDER_WIDTH);
+    path.lineTo(BORDER_WIDTH, height - BORDER_WIDTH);
+    path.lineTo(BORDER_WIDTH, BORDER_WIDTH);
+    canvas.drawPath(path, paint);
+    path.close();
+  }
+
+  /**
+   * @param arrowLeft
+   *          the arrowLeft to set
+   */
+  public void setArrowLeft(float arrowLeft) {
+    this.arrowLeft = arrowLeft;
+  }
+
+  /**
+   * @param arrowLeftRightSpace
+   *          the arrowLeftRightSpace to set
+   */
+  public void setArrowLeftRightSpace(float arrowLeftRightSpace) {
+    this.arrowLeftRightSpace = arrowLeftRightSpace;
+  }
+
+  /**
+   * @param arrowOnTop
+   *          the arrowOnTop to set
+   */
+  public void setArrowOnTop(boolean arrowOnTop) {
+    this.arrowOnTop = arrowOnTop;
+  }
+
+  /**
+   * @param arrowBackgroundColor
+   *          the arrowBackgroundColor to set
+   */
+  public void setArrowBackgroundColor(int arrowBackgroundColor) {
+    this.arrowBackgroundColor = arrowBackgroundColor;
+  }
+
+  /**
+   * @param arrowBorderColor
+   *          the arrowBorderColor to set
+   */
+  public void setArrowBorderColor(int arrowBorderColor) {
+    this.arrowBorderColor = arrowBorderColor;
+  }
+
 }

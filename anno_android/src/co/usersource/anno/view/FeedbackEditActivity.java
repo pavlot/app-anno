@@ -1,5 +1,6 @@
 package co.usersource.anno.view;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -10,6 +11,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +21,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import co.usersource.anno.R;
 import co.usersource.anno.datastore.FileImageManage;
@@ -46,7 +47,7 @@ public class FeedbackEditActivity extends Activity {
 
   // view components.
   private RelativeLayout commentAreaLayout;
-  private ImageView imvScreenshot;
+  private RelativeLayout imvScreenshot;
   private ActionBar actionBar;
   private EditText etComment;
   private Button btnComment;
@@ -81,7 +82,7 @@ public class FeedbackEditActivity extends Activity {
   }
 
   private void setComponents() {
-    imvScreenshot = (ImageView) findViewById(R.id.imvScreenshot);
+    imvScreenshot = (RelativeLayout) findViewById(R.id.imvScreenshot);
     etComment = (EditText) findViewById(R.id.etComment);
     btnComment = (Button) findViewById(R.id.btnComment);
     commentAreaLayout = (RelativeLayout) findViewById(R.id.commentArea);
@@ -140,7 +141,15 @@ public class FeedbackEditActivity extends Activity {
   private void handleFromShareImage(Intent intent) {
     Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
     if (imageUri != null) {
-      imvScreenshot.setImageURI(imageUri);
+      ContentResolver rc = this.getContentResolver();
+      BitmapDrawable drawable;
+      try {
+        drawable = new BitmapDrawable(getResources(),
+            rc.openInputStream(imageUri));
+        imvScreenshot.setBackgroundDrawable(drawable);
+      } catch (FileNotFoundException e) {
+        Log.e(TAG, e.getMessage(), e);
+      }
     }
   }
 

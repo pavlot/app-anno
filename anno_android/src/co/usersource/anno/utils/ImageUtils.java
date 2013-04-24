@@ -4,7 +4,8 @@
 package co.usersource.anno.utils;
 
 import android.graphics.Bitmap;
-import android.widget.ImageView;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.ViewGroup;
 
 /**
  * Image Utilities.
@@ -21,10 +22,8 @@ public final class ImageUtils {
    *          imageView.
    * @return bitmap.
    */
-  public static Bitmap getBitmapFromImageView(ImageView imageView) {
-    imageView.setDrawingCacheEnabled(true);
-    Bitmap bitmap = Bitmap.createBitmap(imageView.getDrawingCache());
-    imageView.setDrawingCacheEnabled(false);
+  public static Bitmap getBitmapFromImageView(ViewGroup imageView) {
+    Bitmap bitmap = ((BitmapDrawable) imageView.getBackground()).getBitmap();
     return bitmap;
   }
 
