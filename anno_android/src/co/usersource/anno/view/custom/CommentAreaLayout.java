@@ -6,6 +6,7 @@ package co.usersource.anno.view.custom;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,6 +33,9 @@ public class CommentAreaLayout extends RelativeLayout {
   public CommentAreaLayout(Context context, AttributeSet attrs) {
     super(context, attrs);
 
+    LayoutInflater.from(context).inflate(R.layout.comment_area_layout, this,
+        true);
+
     TypedArray a = context.obtainStyledAttributes(attrs,
         R.styleable.CommentArea);
     boundary = a.getDimension(R.styleable.CommentArea_arrow_boundary,
@@ -41,17 +45,15 @@ public class CommentAreaLayout extends RelativeLayout {
   }
 
   public void move(int x, int y) {
-    if (circle == null) {
-      circle = (CircleArrow) findViewById(R.id.circleArrow);
-    }
+    circle = getCircleArrow();
     if (commentLayout == null) {
-      commentLayout = (EditTextLayout) findViewById(R.id.input_area);
+      commentLayout = (EditTextLayout) findViewById(R.id.inputArea);
     }
     if (commentInput == null) {
       commentInput = (EditText) findViewById(R.id.etComment);
     }
     if (commentActionBar == null) {
-      commentActionBar = (LinearLayout) findViewById(R.id.comment_action_bar);
+      commentActionBar = (LinearLayout) findViewById(R.id.commentActionBar);
     }
 
     RelativeLayout parent = (RelativeLayout) this.getParent();
@@ -126,5 +128,20 @@ public class CommentAreaLayout extends RelativeLayout {
     circle.setArrowOnTop(!direction);
     circle.setLayoutParams(circleLp);
     commentActionBar.setLayoutParams(abLp);
+  }
+
+  public float getCircleX() {
+    return getCircleArrow().getCircleLeft();
+  }
+
+  private CircleArrow getCircleArrow() {
+    if (circle == null) {
+      circle = (CircleArrow) findViewById(R.id.circleArrow);
+    }
+    return circle;
+  }
+
+  public void setChangable(boolean isChangable) {
+    getCircleArrow().setMovable(isChangable);
   }
 }

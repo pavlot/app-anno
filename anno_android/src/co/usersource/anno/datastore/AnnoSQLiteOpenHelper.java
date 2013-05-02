@@ -6,6 +6,7 @@ package co.usersource.anno.datastore;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * This class intends to provide access and creation routines for Anno program
@@ -16,9 +17,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
 
+  private static final String TAG = "AnnoSQLiteOpenHelper";
+
   public static final String DATABASE_NAME = "anno.db";
   /** Version for upgrade routines. */
-  public static final int DATABASE_VERSION = 1;
+  public static final int DATABASE_VERSION = 2;
 
   /* table adapters */
   private TableAdapter tableCommentFeedbackAdapter;
@@ -36,6 +39,24 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
   @Override
   public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
     // initial version, not need to upgrade.
+    final String addColumnSql = "alter table %s add column %s integer;";
+    final String updateValue = "update %s set %s = %s, %s = %s;";
+    if (oldVersion == 1 && newVersion == 2) {
+      String sql = String.format(addColumnSql,
+          TableCommentFeedbackAdapter.TABLE_NAME,
+          TableCommentFeedbackAdapter.COL_POSITION_X);
+      database.execSQL(sql);
+      Log.d(TAG, "upgrade db:" + sql);
+      sql = String.format(addColumnSql, TableCommentFeedbackAdapter.TABLE_NAME,
+          TableCommentFeedbackAdapter.COL_POSITION_Y);
+      database.execSQL(sql);
+      Log.d(TAG, "upgrade db:" + sql);
+      sql = String.format(updateValue, TableCommentFeedbackAdapter.TABLE_NAME,
+          TableCommentFeedbackAdapter.COL_POSITION_X, 50,
+          TableCommentFeedbackAdapter.COL_POSITION_Y, 100);
+      database.execSQL(sql);
+      Log.d(TAG, "upgrade db:" + sql);
+    }
   }
 
   /**

@@ -29,6 +29,7 @@ import co.usersource.anno.datastore.TableCommentFeedbackAdapter;
 import co.usersource.anno.model.AnnoContentProvider;
 import co.usersource.anno.utils.ImageUtils;
 import co.usersource.anno.utils.ViewUtils;
+import co.usersource.anno.view.custom.CommentAreaLayout;
 
 /**
  * Edit feedback screen from share intent.
@@ -46,7 +47,7 @@ public class FeedbackEditActivity extends Activity {
   private AsyncHandler handler;
 
   // view components.
-  private RelativeLayout commentAreaLayout;
+  private CommentAreaLayout commentAreaLayout;
   private RelativeLayout imvScreenshot;
   private ActionBar actionBar;
   private EditText etComment;
@@ -85,7 +86,7 @@ public class FeedbackEditActivity extends Activity {
     imvScreenshot = (RelativeLayout) findViewById(R.id.imvScreenshot);
     etComment = (EditText) findViewById(R.id.etComment);
     btnComment = (Button) findViewById(R.id.btnComment);
-    commentAreaLayout = (RelativeLayout) findViewById(R.id.commentArea);
+    commentAreaLayout = (CommentAreaLayout) findViewById(R.id.commentArea);
     actionBar = getActionBar();
     btnComment.setOnClickListener(new OnClickListener() {
 
@@ -97,10 +98,14 @@ public class FeedbackEditActivity extends Activity {
               .getBitmapFromImageView(imvScreenshot));
           String imageKey;
           imageKey = imageManage.saveImage(bitmap);
+          float y = commentAreaLayout.getY();
+          float x = commentAreaLayout.getCircleX();
 
           ContentValues values = new ContentValues();
           values.put(TableCommentFeedbackAdapter.COL_COMMENT, comment);
           values.put(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY, imageKey);
+          values.put(TableCommentFeedbackAdapter.COL_POSITION_X, x);
+          values.put(TableCommentFeedbackAdapter.COL_POSITION_Y, y);
           handler.startInsert(TOKEN_INSERT_COMMENT, null,
               AnnoContentProvider.COMMENT_PATH_URI, values);
         } catch (IOException e) {
@@ -115,6 +120,8 @@ public class FeedbackEditActivity extends Activity {
       }
 
     });
+
+    onComment();
   }
 
   @Override
@@ -128,14 +135,18 @@ public class FeedbackEditActivity extends Activity {
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
     case R.id.feedback_action_comment:
-      actionBar.hide();
-      commentAreaLayout.setVisibility(View.VISIBLE);
+      onComment();
       return true;
     case R.id.feedback_action_draw:
     case R.id.feedback_action_audio:
       break;
     }
     return false;
+  }
+
+  private void onComment() {
+    actionBar.hide();
+    commentAreaLayout.setVisibility(View.VISIBLE);
   }
 
   private void handleFromShareImage(Intent intent) {
@@ -170,11 +181,7 @@ public class FeedbackEditActivity extends Activity {
         Log.d(TAG,
             "insert comment successfully. inserted uri:" + uri.toString());
         ViewUtils.displayInfo(activityRef.get(), R.string.success_send_comment);
-        // jump to home screen.
         activityRef.get().finish();
-        Intent homeIntent = new Intent(activityRef.get(),
-            AnnoMainActivity.class);
-        activityRef.get().startActivity(homeIntent);
       }
     }
 

@@ -24,6 +24,8 @@ public class TableCommentFeedbackAdapter extends AbstractTableAdapter {
   public static final String COL_ID = "_id";
   public static final String COL_COMMENT = "comment";
   public static final String COL_SCREENSHOT_KEY = "screenshot_key";
+  public static final String COL_POSITION_X = "x";
+  public static final String COL_POSITION_Y = "y";
 
   public static final String TABLE_NAME = "feedback_comment";
 
@@ -40,8 +42,13 @@ public class TableCommentFeedbackAdapter extends AbstractTableAdapter {
   public List<String> getInitSqls() {
     String createTableSql = String
         .format(
-            "create table %s (%s integer primary key autoincrement, %s text not null, %s text not null);",
-            TABLE_NAME, COL_ID, COL_COMMENT, COL_SCREENSHOT_KEY);
+            "create table %s (%s integer primary key autoincrement, %s text not null, %s text not null, %s integer not null, %s integer not null);",
+            TABLE_NAME, COL_ID, COL_COMMENT, COL_SCREENSHOT_KEY,
+            COL_POSITION_X, COL_POSITION_Y);
+    // String createTableSql = String
+    // .format(
+    // "create table %s (%s integer primary key autoincrement, %s text not null, %s text not null);",
+    // TABLE_NAME, COL_ID, COL_COMMENT, COL_SCREENSHOT_KEY);
 
     List<String> initSqls = new ArrayList<String>();
     initSqls.add(createTableSql);

@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import co.usersource.anno.R;
@@ -30,6 +29,8 @@ public class CircleArrow extends View implements View.OnTouchListener {
   private static final float DEFAULT_CIRCLE_RADIUS = 20;
   private static final float DEFAULT_CIRCLE_LEFT = 100;
   private static final float BORDER_WIDTH = 6; // in px.
+  private float borderHeight;
+  private float borderWidth;
 
   private float circleRadius;
   private int circleBackgroundColor;
@@ -45,6 +46,7 @@ public class CircleArrow extends View implements View.OnTouchListener {
   private Path path;
 
   private boolean flag = false;
+  private boolean isMovable = true;
 
   /**
    * @param context
@@ -84,6 +86,12 @@ public class CircleArrow extends View implements View.OnTouchListener {
     a.recycle();
   }
 
+  public void setMovable(boolean isMovable) {
+    if (this.isMovable != isMovable) {
+      this.isMovable = isMovable;
+    }
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -93,51 +101,108 @@ public class CircleArrow extends View implements View.OnTouchListener {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
 
-    int width = this.getWidth();
     int height = this.getHeight();
 
     if (arrowOnTop) {
       drawCircleTop(canvas);
-      drawRightLineTop(canvas, height);
-      drawLeftLineTop(canvas, height);
-      drawTriangleTop(canvas, height);
     } else {
       drawCircleBottom(canvas, height);
-      drawRightLineBottom(canvas, height);
-      drawLeftLineBottom(canvas, height);
-      drawTriangleBottom(canvas, height);
+    }
+    if (circleLeft + circleRadius >= arrowLeft + arrowLeftRightSpace / 2) {
+      borderWidth = similarLine(
+          BORDER_WIDTH,
+          verticalLine(circleLeft + circleRadius - arrowLeft, height
+              - circleRadius), circleLeft + circleRadius - arrowLeft);
+      borderHeight = similarLine(
+          BORDER_WIDTH,
+          verticalLine(circleLeft + circleRadius - arrowLeft, height
+              - circleRadius), height - circleRadius);
+      if (arrowOnTop) {
+        drawTriangleTop(canvas, height);
+        drawLeftLineTop(canvas, height, false);
+        if (circleLeft + circleRadius <= arrowLeft + arrowLeftRightSpace) {
+          drawRightLineTop(canvas, height, false);
+        } else {
+          drawRightLineTop(canvas, height, true);
+        }
+      } else {
+        drawTriangleBottom(canvas, height);
+        drawLeftLineBottom(canvas, height, false);
+        if (circleLeft + circleRadius <= arrowLeft + arrowLeftRightSpace) {
+          drawRightLineBottom(canvas, height, false);
+        } else {
+          drawRightLineBottom(canvas, height, true);
+        }
+      }
+    } else if (circleLeft + circleRadius < arrowLeft + arrowLeftRightSpace / 2) {
+      borderWidth = similarLine(
+          BORDER_WIDTH,
+          verticalLine(arrowLeft + arrowLeftRightSpace - circleLeft
+              - circleRadius, height - circleRadius), arrowLeft
+              + arrowLeftRightSpace - circleLeft - circleRadius);
+      borderHeight = similarLine(
+          BORDER_WIDTH,
+          verticalLine(arrowLeft + arrowLeftRightSpace - circleLeft
+              - circleRadius, height - circleRadius), height - circleRadius);
+      if (arrowOnTop) {
+        drawTriangleTop(canvas, height);
+        drawRightLineTop(canvas, height, false);
+        if (circleLeft + circleRadius >= arrowLeft) {
+          drawLeftLineTop(canvas, height, false);
+        } else {
+          drawLeftLineTop(canvas, height, true);
+        }
+      } else {
+        drawTriangleBottom(canvas, height);
+        drawRightLineBottom(canvas, height, false);
+        if (circleLeft + circleRadius >= arrowLeft) {
+          drawLeftLineBottom(canvas, height, false);
+        } else {
+          drawLeftLineBottom(canvas, height, true);
+        }
+      }
     }
   }
 
   private void drawTriangleBottom(Canvas canvas, int height) {
     paint.setColor(arrowBackgroundColor);
     path.reset();
-    path.moveTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
-    path.lineTo(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, 0);
-    path.lineTo(arrowLeft + BORDER_WIDTH, 0);
-    path.lineTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    path.moveTo(circleLeft + circleRadius, height - circleRadius - borderHeight);
+    path.lineTo(arrowLeft + arrowLeftRightSpace, 0);
+    path.lineTo(arrowLeft, 0);
+    path.lineTo(circleLeft + circleRadius, height - circleRadius - borderHeight);
     canvas.drawPath(path, paint);
     path.close();
   }
 
-  private void drawLeftLineBottom(Canvas canvas, int height) {
+  private void drawLeftLineBottom(Canvas canvas, int height, boolean flag) {
     paint.setColor(arrowBorderColor);
     path.reset();
     path.moveTo(circleLeft + circleRadius, height - circleRadius);
-    path.lineTo(arrowLeft, 0);
-    path.lineTo(arrowLeft + BORDER_WIDTH, 0);
-    path.lineTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    if (flag) {
+      path.lineTo(arrowLeft, 0);
+      path.lineTo(arrowLeft - borderWidth, 0);
+    } else {
+      path.lineTo(arrowLeft - borderWidth, 0);
+      path.lineTo(arrowLeft, 0);
+    }
+    path.lineTo(circleLeft + circleRadius, height - circleRadius - borderHeight);
     path.lineTo(circleLeft + circleRadius, height - circleRadius);
     canvas.drawPath(path, paint);
   }
 
-  private void drawRightLineBottom(Canvas canvas, int height) {
+  private void drawRightLineBottom(Canvas canvas, int height, boolean flag) {
     paint.setColor(arrowBorderColor);
     path.reset();
     path.moveTo(circleLeft + circleRadius, height - circleRadius);
-    path.lineTo(arrowLeft + arrowLeftRightSpace, 0);
-    path.lineTo(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, 0);
-    path.lineTo(circleLeft + circleRadius, height - circleRadius - BORDER_WIDTH);
+    if (flag) {
+      path.lineTo(arrowLeft + arrowLeftRightSpace, 0);
+      path.lineTo(arrowLeft + arrowLeftRightSpace + borderWidth, 0);
+    } else {
+      path.lineTo(arrowLeft + arrowLeftRightSpace + borderWidth, 0);
+      path.lineTo(arrowLeft + arrowLeftRightSpace, 0);
+    }
+    path.lineTo(circleLeft + circleRadius, height - circleRadius - borderHeight);
     path.lineTo(circleLeft + circleRadius, height - circleRadius);
     canvas.drawPath(path, paint);
   }
@@ -161,32 +226,44 @@ public class CircleArrow extends View implements View.OnTouchListener {
   private void drawTriangleTop(Canvas canvas, int height) {
     paint.setColor(arrowBackgroundColor);
     path.reset();
-    path.moveTo(circleLeft + circleRadius, circleRadius + BORDER_WIDTH);
-    path.lineTo(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, height);
-    path.lineTo(arrowLeft + BORDER_WIDTH, height);
-    path.lineTo(circleLeft + circleRadius, circleRadius + BORDER_WIDTH);
+    path.moveTo(circleLeft + circleRadius, circleRadius + borderHeight);
+    path.lineTo(arrowLeft + arrowLeftRightSpace, height);
+    path.lineTo(arrowLeft, height);
+    path.lineTo(circleLeft + circleRadius, circleRadius + borderHeight);
     canvas.drawPath(path, paint);
     path.close();
   }
 
-  private void drawLeftLineTop(Canvas canvas, int height) {
+  private void drawLeftLineTop(Canvas canvas, int height, boolean flag) {
     paint.setColor(arrowBorderColor);
     path.reset();
+
     path.moveTo(circleLeft + circleRadius, circleRadius);
-    path.lineTo(arrowLeft, height);
-    path.lineTo(arrowLeft + BORDER_WIDTH, height);
-    path.lineTo(circleLeft + circleRadius, circleRadius + BORDER_WIDTH);
+    if (flag) {
+      path.lineTo(arrowLeft, height);
+      path.lineTo(arrowLeft - borderWidth, height);
+    } else {
+      path.lineTo(arrowLeft - borderWidth, height);
+      path.lineTo(arrowLeft, height);
+    }
+    path.lineTo(circleLeft + circleRadius, circleRadius + borderHeight);
     path.lineTo(circleLeft + circleRadius, circleRadius);
     canvas.drawPath(path, paint);
   }
 
-  private void drawRightLineTop(Canvas canvas, int height) {
+  private void drawRightLineTop(Canvas canvas, int height, boolean flag) {
     paint.setColor(arrowBorderColor);
     path.reset();
+
     path.moveTo(circleLeft + circleRadius, circleRadius);
-    path.lineTo(arrowLeft + arrowLeftRightSpace, height);
-    path.lineTo(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, height);
-    path.lineTo(circleLeft + circleRadius, circleRadius + BORDER_WIDTH);
+    if (flag) { // right
+      path.lineTo(arrowLeft + arrowLeftRightSpace, height);
+      path.lineTo(arrowLeft + arrowLeftRightSpace + borderWidth, height);
+    } else { // left
+      path.lineTo(arrowLeft + arrowLeftRightSpace + borderWidth, height);
+      path.lineTo(arrowLeft + arrowLeftRightSpace, height);
+    }
+    path.lineTo(circleLeft + circleRadius, circleRadius + borderHeight);
     path.lineTo(circleLeft + circleRadius, circleRadius);
     canvas.drawPath(path, paint);
   }
@@ -211,11 +288,12 @@ public class CircleArrow extends View implements View.OnTouchListener {
   public boolean onTouch(View v, MotionEvent event) {
     final int x = (int) event.getRawX();
     final int y = (int) event.getRawY();
-    Log.e(TAG, String.format("x:%s y:%s", x, y));
     switch (event.getAction() & MotionEvent.ACTION_MASK) {
     case MotionEvent.ACTION_DOWN:
-      if (x >= circleLeft && x <= circleLeft + circleRadius * 2) {
-        flag = true;
+      if (isMovable) {
+        if (x >= circleLeft && x <= circleLeft + circleRadius * 2) {
+          flag = true;
+        }
       }
       break;
     case MotionEvent.ACTION_MOVE:
@@ -310,4 +388,18 @@ public class CircleArrow extends View implements View.OnTouchListener {
     this.arrowOnTop = arrowOnTop;
   }
 
+  /**
+   * @return the circleLeft
+   */
+  public float getCircleLeft() {
+    return circleLeft;
+  }
+
+  private float verticalLine(float x, float y) {
+    return (float) ((x * y) / Math.sqrt(x * x + y * y));
+  }
+
+  private float similarLine(float x1, float x2, float y2) {
+    return x1 * y2 / x2;
+  }
 }

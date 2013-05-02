@@ -88,10 +88,9 @@ public class EditTextLayout extends RelativeLayout {
     canvas.drawLine(width - BORDER_WIDTH / 2, 0, width - BORDER_WIDTH / 2,
         height, paint);
     if (arrowOnTop) {
-      canvas.drawLine(0, BORDER_WIDTH / 2, arrowLeft + BORDER_WIDTH,
+      canvas.drawLine(0, BORDER_WIDTH / 2, arrowLeft, BORDER_WIDTH / 2, paint);
+      canvas.drawLine(arrowLeft + arrowLeftRightSpace, BORDER_WIDTH / 2, width,
           BORDER_WIDTH / 2, paint);
-      canvas.drawLine(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH,
-          BORDER_WIDTH / 2, width, BORDER_WIDTH / 2, paint);
     } else {
       canvas.drawLine(0, BORDER_WIDTH / 2, width, BORDER_WIDTH / 2, paint);
     }
@@ -99,10 +98,10 @@ public class EditTextLayout extends RelativeLayout {
       canvas.drawLine(0, height - BORDER_WIDTH / 2, width, height
           - BORDER_WIDTH / 2, paint);
     } else {
-      canvas.drawLine(0, height - BORDER_WIDTH / 2, arrowLeft + BORDER_WIDTH,
-          height - BORDER_WIDTH / 2, paint);
-      canvas.drawLine(arrowLeft + arrowLeftRightSpace - BORDER_WIDTH, height
-          - BORDER_WIDTH / 2, width, height - BORDER_WIDTH / 2, paint);
+      canvas.drawLine(0, height - BORDER_WIDTH / 2, arrowLeft, height
+          - BORDER_WIDTH / 2, paint);
+      canvas.drawLine(arrowLeft + arrowLeftRightSpace, height - BORDER_WIDTH
+          / 2, width, height - BORDER_WIDTH / 2, paint);
     }
   }
 
