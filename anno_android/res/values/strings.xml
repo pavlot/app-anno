@@ -16,6 +16,7 @@
     <string name="fail_create_directory">Create directory %s failed.</string>
     <string name="fail_enough_sdcard_space">No enough space on SD card.</string>
     <string name="fail_send_comment">Send comment failed.</string>
+    <string name="invalid_comment_empty">You should enter some comments.</string>
 
     <!-- success message -->
     <string name="success_send_comment">Send comment successfully.</string>

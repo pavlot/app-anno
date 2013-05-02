@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -88,45 +87,54 @@ public class FeedbackEditActivity extends Activity {
     btnComment = (Button) findViewById(R.id.btnComment);
     commentAreaLayout = (CommentAreaLayout) findViewById(R.id.commentArea);
     actionBar = getActionBar();
-    btnComment.setOnClickListener(new OnClickListener() {
 
-      @Override
-      public void onClick(View view) {
-        try {
-          String comment = etComment.getText().toString();
-          Bitmap bitmap = ImageUtils.compressBitmap(ImageUtils
-              .getBitmapFromImageView(imvScreenshot));
-          String imageKey;
-          imageKey = imageManage.saveImage(bitmap);
-          float y = commentAreaLayout.getY();
-          float x = commentAreaLayout.getCircleX();
-
-          ContentValues values = new ContentValues();
-          values.put(TableCommentFeedbackAdapter.COL_COMMENT, comment);
-          values.put(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY, imageKey);
-          values.put(TableCommentFeedbackAdapter.COL_POSITION_X, x);
-          values.put(TableCommentFeedbackAdapter.COL_POSITION_Y, y);
-          handler.startInsert(TOKEN_INSERT_COMMENT, null,
-              AnnoContentProvider.COMMENT_PATH_URI, values);
-        } catch (IOException e) {
-          Log.e(TAG, e.getMessage());
-          ViewUtils.displayError(FeedbackEditActivity.this, e.getMessage());
-        } catch (Exception e) {
-          // catch other exceptions, such as SQLException.
-          Log.e(TAG, e.getMessage());
-          ViewUtils.displayError(FeedbackEditActivity.this,
-              R.string.fail_send_comment);
-        }
-      }
-
-    });
+    btnComment.setOnClickListener(sendCommentClickListener);
 
     onComment();
   }
 
+  private View.OnClickListener sendCommentClickListener = new View.OnClickListener() {
+
+    @Override
+    public void onClick(View v) {
+      try {
+        String comment = etComment.getText().toString();
+        if (comment == null || comment.trim().isEmpty()) {
+          ViewUtils.displayError(FeedbackEditActivity.this,
+              R.string.invalid_comment_empty);
+          return;
+        }
+        Bitmap bitmap = ImageUtils.compressBitmap(ImageUtils
+            .getBitmapFromImageView(imvScreenshot));
+        String imageKey;
+        imageKey = imageManage.saveImage(bitmap);
+        float y = commentAreaLayout.getY();
+        float x = commentAreaLayout.getCircleX();
+        boolean circleOnTop = commentAreaLayout.circleOnTop();
+
+        ContentValues values = new ContentValues();
+        values.put(TableCommentFeedbackAdapter.COL_COMMENT, comment);
+        values.put(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY, imageKey);
+        values.put(TableCommentFeedbackAdapter.COL_POSITION_X, x);
+        values.put(TableCommentFeedbackAdapter.COL_POSITION_Y, y);
+        values.put(TableCommentFeedbackAdapter.COL_DIRECTION, circleOnTop ? 0
+            : 1);
+        handler.startInsert(TOKEN_INSERT_COMMENT, null,
+            AnnoContentProvider.COMMENT_PATH_URI, values);
+      } catch (IOException e) {
+        Log.e(TAG, e.getMessage());
+        ViewUtils.displayError(FeedbackEditActivity.this, e.getMessage());
+      } catch (Exception e) {
+        // catch other exceptions, such as SQLException.
+        Log.e(TAG, e.getMessage());
+        ViewUtils.displayError(FeedbackEditActivity.this,
+            R.string.fail_send_comment);
+      }
+    }
+  };
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.feedback_action_menu, menu);
     return true;
   }
@@ -144,6 +152,10 @@ public class FeedbackEditActivity extends Activity {
     return false;
   }
 
+  /**
+   * Handle pressing 'comment' button.
+   * 
+   */
   private void onComment() {
     actionBar.hide();
     commentAreaLayout.setVisibility(View.VISIBLE);
@@ -164,6 +176,12 @@ public class FeedbackEditActivity extends Activity {
     }
   }
 
+  /**
+   * Async handler for query manipulation.
+   * 
+   * @author topcircler
+   * 
+   */
   private static class AsyncHandler extends AsyncQueryHandler {
 
     private WeakReference<Activity> activityRef;

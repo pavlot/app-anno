@@ -67,7 +67,8 @@ public class FeedbackViewActivity extends Activity {
         TableCommentFeedbackAdapter.COL_COMMENT,
         TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY,
         TableCommentFeedbackAdapter.COL_POSITION_X,
-        TableCommentFeedbackAdapter.COL_POSITION_Y };
+        TableCommentFeedbackAdapter.COL_POSITION_Y,
+        TableCommentFeedbackAdapter.COL_DIRECTION };
     Uri uri = intent.getParcelableExtra(AnnoContentProvider.COMMENT_PATH);
     handler.startQuery(TOKEN_GET_COMMENT, null, uri, projection, null, null,
         null);
@@ -116,15 +117,26 @@ public class FeedbackViewActivity extends Activity {
                 activity.imageManage.loadImage(imageKey));
             activity.viewImvScreenshot.setBackgroundDrawable(drawable);
           }
-          int x, y;
+          final int x, y, direction;
           int xIdx = cursor
               .getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_X);
           int yIdx = cursor
               .getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_Y);
-          if (xIdx != -1 && yIdx != -1) {
+          int directionIdx = cursor
+              .getColumnIndex(TableCommentFeedbackAdapter.COL_DIRECTION);
+          if (xIdx != -1 && yIdx != -1 && directionIdx != -1) {
             x = cursor.getInt(xIdx);
             y = cursor.getInt(yIdx);
-            activity.viewCommentArea.move(x, y);
+            direction = cursor.getInt(directionIdx);
+            final FeedbackViewActivity finalActivity = activity;
+            activity.viewCommentArea.post(new Runnable() {
+
+              @Override
+              public void run() {
+                finalActivity.viewCommentArea.locate(x, y, direction);
+              }
+
+            });
           }
         }
       }

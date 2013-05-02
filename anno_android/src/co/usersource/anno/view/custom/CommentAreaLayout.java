@@ -44,32 +44,57 @@ public class CommentAreaLayout extends RelativeLayout {
     a.recycle();
   }
 
+  public void locate(int x, int y, int direction) {
+    circle = getCircleArrow();
+    commentLayout = getCommentLayout();
+    commentInput = getCommentInput();
+    commentActionBar = getCommentActionBar();
+
+    flip(direction == 1 ? true : false);
+
+    RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+        this.getWidth(), this.getHeight());
+    lp.setMargins(0, y, 0, 0);
+    this.setLayoutParams(lp);
+
+    setHorizontalPosition(x);
+
+    circle.invalidate();
+    commentLayout.invalidate();
+    commentActionBar.invalidate();
+    invalidate();
+  }
+
   public void move(int x, int y) {
     circle = getCircleArrow();
-    if (commentLayout == null) {
-      commentLayout = (EditTextLayout) findViewById(R.id.inputArea);
-    }
-    if (commentInput == null) {
-      commentInput = (EditText) findViewById(R.id.etComment);
-    }
-    if (commentActionBar == null) {
-      commentActionBar = (LinearLayout) findViewById(R.id.commentActionBar);
-    }
+    commentLayout = getCommentLayout();
+    commentInput = getCommentInput();
+    commentActionBar = getCommentActionBar();
 
     RelativeLayout parent = (RelativeLayout) this.getParent();
+    int parentHeight = parent.getHeight();
     if (circleOnTop) {
-      if (y > parent.getHeight() / 3) { // lower than 1/3, change circle to
-                                        // bottom.
+      if (y > parentHeight / 3) { // lower than 1/3, change circle to
+                                  // bottom.
         flip(circleOnTop);
         circleOnTop = false;
       }
     } else {
-      if (y < parent.getHeight() / 3) {
+      if (y < parentHeight / 3) {
         flip(circleOnTop);
         circleOnTop = true;
       }
     }
 
+    setVerticalPosition(y, parent);
+    setHorizontalPosition(x);
+    circle.invalidate();
+    commentLayout.invalidate();
+    commentActionBar.invalidate();
+    invalidate();
+  }
+
+  private void setVerticalPosition(int y, RelativeLayout parent) {
     if (y + circle.getCircleRadius() < parent.getHeight()) {
       RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
           this.getWidth(), this.getHeight());
@@ -80,7 +105,9 @@ public class CommentAreaLayout extends RelativeLayout {
       }
       this.setLayoutParams(lp);
     }
+  }
 
+  private void setHorizontalPosition(int x) {
     if (x + circle.getCircleRadius() * 2 < getWidth()) {
       float margin = this.getContext().getResources()
           .getDimension(R.dimen.comment_area_marginLeftRight);
@@ -100,10 +127,6 @@ public class CommentAreaLayout extends RelativeLayout {
         commentLayout.setArrowLeft(x - margin);
       }
     }
-    circle.invalidate();
-    commentLayout.invalidate();
-    commentActionBar.invalidate();
-    invalidate();
   }
 
   private void flip(boolean direction) {
@@ -134,6 +157,10 @@ public class CommentAreaLayout extends RelativeLayout {
     return getCircleArrow().getCircleLeft();
   }
 
+  public float getCircleY() {
+    return getCircleArrow().getY() + getY();
+  }
+
   private CircleArrow getCircleArrow() {
     if (circle == null) {
       circle = (CircleArrow) findViewById(R.id.circleArrow);
@@ -141,7 +168,33 @@ public class CommentAreaLayout extends RelativeLayout {
     return circle;
   }
 
+  private EditTextLayout getCommentLayout() {
+    if (commentLayout == null) {
+      commentLayout = (EditTextLayout) findViewById(R.id.inputArea);
+    }
+    return commentLayout;
+  }
+
+  private EditText getCommentInput() {
+    if (commentInput == null) {
+      commentInput = (EditText) findViewById(R.id.etComment);
+    }
+    return commentInput;
+  }
+
+  private LinearLayout getCommentActionBar() {
+    if (commentActionBar == null) {
+      commentActionBar = (LinearLayout) findViewById(R.id.commentActionBar);
+    }
+    return commentActionBar;
+  }
+
   public void setChangable(boolean isChangable) {
     getCircleArrow().setMovable(isChangable);
   }
+
+  public boolean circleOnTop() {
+    return circleOnTop;
+  }
+
 }

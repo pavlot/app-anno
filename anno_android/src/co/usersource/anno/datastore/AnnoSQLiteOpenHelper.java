@@ -21,7 +21,7 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
 
   public static final String DATABASE_NAME = "anno.db";
   /** Version for upgrade routines. */
-  public static final int DATABASE_VERSION = 2;
+  public static final int DATABASE_VERSION = 3;
 
   /* table adapters */
   private TableAdapter tableCommentFeedbackAdapter;
@@ -40,7 +40,8 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
   public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
     // initial version, not need to upgrade.
     final String addColumnSql = "alter table %s add column %s integer;";
-    final String updateValue = "update %s set %s = %s, %s = %s;";
+    final String updateTwoValue = "update %s set %s = %s, %s = %s;";
+    final String updateOneValue = "update %s set %s = %s;";
     if (oldVersion == 1 && newVersion == 2) {
       String sql = String.format(addColumnSql,
           TableCommentFeedbackAdapter.TABLE_NAME,
@@ -51,9 +52,21 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
           TableCommentFeedbackAdapter.COL_POSITION_Y);
       database.execSQL(sql);
       Log.d(TAG, "upgrade db:" + sql);
-      sql = String.format(updateValue, TableCommentFeedbackAdapter.TABLE_NAME,
+      sql = String.format(updateOneValue,
+          TableCommentFeedbackAdapter.TABLE_NAME,
           TableCommentFeedbackAdapter.COL_POSITION_X, 50,
           TableCommentFeedbackAdapter.COL_POSITION_Y, 100);
+      database.execSQL(sql);
+      Log.d(TAG, "upgrade db:" + sql);
+    } else if (oldVersion == 2 && newVersion == 3) {
+      String sql = String.format(addColumnSql,
+          TableCommentFeedbackAdapter.TABLE_NAME,
+          TableCommentFeedbackAdapter.COL_DIRECTION);
+      database.execSQL(sql);
+      Log.d(TAG, "upgrade db:" + sql);
+      sql = String.format(updateTwoValue,
+          TableCommentFeedbackAdapter.TABLE_NAME,
+          TableCommentFeedbackAdapter.COL_DIRECTION, 0);
       database.execSQL(sql);
       Log.d(TAG, "upgrade db:" + sql);
     }
