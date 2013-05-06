@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/commentbox_background"
+            android:background="@null"
             anno:arrow_background_color="@color/transparent_white"
             anno:arrow_border_color="@color/commentbox_border"
             anno:arrow_left="100dp"

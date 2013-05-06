@@ -227,8 +227,8 @@ public class CircleArrow extends View implements View.OnTouchListener {
     paint.setColor(arrowBackgroundColor);
     path.reset();
     path.moveTo(circleLeft + circleRadius, circleRadius + borderHeight);
-    path.lineTo(arrowLeft + arrowLeftRightSpace, height);
-    path.lineTo(arrowLeft, height);
+    path.lineTo(arrowLeft + arrowLeftRightSpace, height + 1);
+    path.lineTo(arrowLeft, height + 1);
     path.lineTo(circleLeft + circleRadius, circleRadius + borderHeight);
     canvas.drawPath(path, paint);
     path.close();
@@ -291,8 +291,10 @@ public class CircleArrow extends View implements View.OnTouchListener {
     switch (event.getAction() & MotionEvent.ACTION_MASK) {
     case MotionEvent.ACTION_DOWN:
       if (isMovable) {
-        if (x >= circleLeft && x <= circleLeft + circleRadius * 2) {
+        if (x >= circleLeft && x <= circleLeft + circleRadius * 2 && !flag) {
           flag = true;
+          CommentAreaLayout layout = (CommentAreaLayout) this.getParent();
+          layout.startMoving();
         }
       }
       break;

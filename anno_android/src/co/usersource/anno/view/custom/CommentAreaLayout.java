@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -195,6 +196,13 @@ public class CommentAreaLayout extends RelativeLayout {
 
   public boolean circleOnTop() {
     return circleOnTop;
+  }
+
+  public void startMoving() {
+    InputMethodManager imm = (InputMethodManager) this.getContext()
+        .getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(getCommentInput().getWindowToken(),
+        InputMethodManager.RESULT_UNCHANGED_SHOWN);
   }
 
 }

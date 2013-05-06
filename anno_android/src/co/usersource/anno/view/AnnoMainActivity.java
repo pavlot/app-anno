@@ -73,8 +73,8 @@ public class AnnoMainActivity extends FragmentActivity implements
    * Loads all comments and display in this list once loads completes.
    */
   private void loadComments() {
-    getSupportLoaderManager().initLoader(URL_LOADER_COMMENTS, null, this);
     Log.d(TAG, "start query comments.");
+    getSupportLoaderManager().restartLoader(URL_LOADER_COMMENTS, null, this);
   }
 
   @Override
@@ -85,15 +85,15 @@ public class AnnoMainActivity extends FragmentActivity implements
   }
 
   @Override
-  protected void onStart() {
-    super.onStart();
-    loadComments();
-  }
-
-  @Override
   protected void onDestroy() {
     super.onDestroy();
     // no need to close cursor here, since it's already done in onLoaderReset().
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    loadComments();
   }
 
   @Override

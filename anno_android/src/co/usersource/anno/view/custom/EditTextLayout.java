@@ -80,7 +80,7 @@ public class EditTextLayout extends RelativeLayout {
           + arrowLeftRightSpace, BORDER_WIDTH / 2, paint);
     } else {
       canvas.drawLine(arrowLeft, height - BORDER_WIDTH / 2, arrowLeft
-          + arrowLeftRightSpace, height - BORDER_WIDTH, paint);
+          + arrowLeftRightSpace, height - BORDER_WIDTH / 2, paint);
     }
 
     paint.setColor(arrowBorderColor);

@@ -64,7 +64,7 @@ public class AnnoSQLiteOpenHelper extends SQLiteOpenHelper {
           TableCommentFeedbackAdapter.COL_DIRECTION);
       database.execSQL(sql);
       Log.d(TAG, "upgrade db:" + sql);
-      sql = String.format(updateTwoValue,
+      sql = String.format(updateOneValue,
           TableCommentFeedbackAdapter.TABLE_NAME,
           TableCommentFeedbackAdapter.COL_DIRECTION, 0);
       database.execSQL(sql);
