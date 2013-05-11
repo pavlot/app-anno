@@ -90,6 +90,7 @@ public class CommentAreaLayout extends RelativeLayout {
     setVerticalPosition(y, parent);
     setHorizontalPosition(x);
     circle.invalidate();
+    commentInput.invalidate();
     commentLayout.invalidate();
     commentActionBar.invalidate();
     invalidate();
