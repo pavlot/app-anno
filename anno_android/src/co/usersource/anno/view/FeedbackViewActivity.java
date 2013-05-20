@@ -16,11 +16,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import co.usersource.anno.R;
-import co.usersource.anno.datastore.FileImageManage;
-import co.usersource.anno.datastore.ImageManage;
-import co.usersource.anno.datastore.TableCommentFeedbackAdapter;
-import co.usersource.anno.model.AnnoContentProvider;
-import co.usersource.anno.view.custom.CommentAreaLayout;
+import co.usersource.annoplugin.datastore.FileImageManage;
+import co.usersource.annoplugin.datastore.ImageManage;
+import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
+import co.usersource.annoplugin.model.AnnoContentProvider;
+import co.usersource.annoplugin.utils.AppConfig;
+import co.usersource.annoplugin.view.custom.CommentAreaLayout;
 
 /**
  * View comment feedback.
@@ -54,7 +55,8 @@ public class FeedbackViewActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.feedback_view_activity);
 
-    imageManage = new FileImageManage(this);
+    AppConfig config = AppConfig.getInstance(this);
+    imageManage = new FileImageManage(this, config);
     handler = new AsyncHandler(getContentResolver(), this);
 
     setComponents();

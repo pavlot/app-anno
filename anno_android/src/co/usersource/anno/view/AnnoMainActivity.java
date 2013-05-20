@@ -16,8 +16,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import co.usersource.anno.R;
-import co.usersource.anno.datastore.TableCommentFeedbackAdapter;
-import co.usersource.anno.model.AnnoContentProvider;
+import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
+import co.usersource.annoplugin.model.AnnoContentProvider;
 
 /**
  * Home screen. Displays a list of all comments, by clicking any comment,

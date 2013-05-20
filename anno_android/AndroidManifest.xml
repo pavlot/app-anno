@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="co.usersource.anno.view.FeedbackEditActivity"
+            android:name="co.usersource.annoplugin.view.FeedbackEditActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:uiOptions="splitActionBarWhenNarrow" >
@@ -54,7 +54,7 @@
         </activity>
 
         <provider
-            android:name="co.usersource.anno.model.AnnoContentProvider"
+            android:name="co.usersource.annoplugin.model.AnnoContentProvider"
             android:authorities="co.usersource.anno.provider"
             android:enabled="true"
             android:multiprocess="true" />
