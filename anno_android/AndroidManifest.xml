@@ -57,6 +57,7 @@
             android:name="co.usersource.annoplugin.model.AnnoContentProvider"
             android:authorities="co.usersource.anno.provider"
             android:enabled="true"
+            android:exported="true"
             android:multiprocess="true" />
     </application>
 

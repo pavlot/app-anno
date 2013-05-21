@@ -1,7 +1,7 @@
 /**
  * 
  */
-package co.usersource.annoplugin;
+package co.usersource.annoplugin.hotkey;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
