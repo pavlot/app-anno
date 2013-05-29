@@ -77,6 +77,7 @@ public class FeedbackEditActivity extends Activity {
     if (Intent.ACTION_SEND.equals(action) && type != null) {
       if (type.startsWith("image/")) {
         handleFromShareImage(intent);
+        Log.d(TAG, "package name:" + this.getPackageName());
       }
     }
   }
@@ -126,7 +127,8 @@ public class FeedbackEditActivity extends Activity {
         ViewUtils.displayError(FeedbackEditActivity.this, e.getMessage());
       } catch (Exception e) {
         // catch other exceptions, such as SQLException.
-        Log.e(TAG, e.getMessage());
+        if (e != null)
+          Log.e(TAG, e.getMessage());
         ViewUtils.displayError(FeedbackEditActivity.this,
             R.string.fail_send_comment);
       }

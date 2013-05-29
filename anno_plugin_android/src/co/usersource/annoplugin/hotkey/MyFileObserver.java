@@ -54,15 +54,6 @@ public class MyFileObserver extends FileObserver {
       break;
     case android.os.FileObserver.CLOSE_WRITE:
       Log.d("MyFileObserver", "close write:" + path);
-      break;
-    case android.os.FileObserver.ACCESS:
-      Log.d("MyFileObserver", "access:" + path);
-      break;
-    case android.os.FileObserver.ATTRIB:
-      Log.d("MyFileObserver", "attrib:" + path);
-      break;
-    case android.os.FileObserver.CLOSE_NOWRITE:
-      Log.d("MyFileObserver", "close_nowrite:" + path);
       if (started.get()) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setClassName("co.usersource.doui",
@@ -74,6 +65,16 @@ public class MyFileObserver extends FileObserver {
         context.startActivity(intent);
         started.set(false);
       }
+      break;
+    case android.os.FileObserver.ACCESS:
+      Log.d("MyFileObserver", "access:" + path);
+      break;
+    case android.os.FileObserver.ATTRIB:
+      Log.d("MyFileObserver", "attrib:" + path);
+      break;
+    case android.os.FileObserver.CLOSE_NOWRITE:
+      Log.d("MyFileObserver", "close_nowrite:" + path);
+
       break;
     case android.os.FileObserver.DELETE:
       Log.d("MyFileObserver", "delete:" + path);

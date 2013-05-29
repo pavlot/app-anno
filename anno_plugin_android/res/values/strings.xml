@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">anno_plugin_android</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="action_settings">Settings</string>
 
     <!-- action button names on action bar of FeedbackActivity -->
     <string name="feedback_comment">Comment</string>
@@ -13,6 +11,7 @@
 
     <!-- error message -->
     <string name="erorr_title">Error</string>
+    <string name="fail_take_screenshot">Take Screenshot Failed.</string>
     <string name="fail_create_directory">Create directory %s failed.</string>
     <string name="fail_enough_sdcard_space">No enough space on SD card.</string>
     <string name="fail_send_comment">Send comment failed.</string>
@@ -24,4 +23,5 @@
 
     <!-- text hint -->
     <string name="comment_hint">Enter comment here.</string>
+
 </resources>

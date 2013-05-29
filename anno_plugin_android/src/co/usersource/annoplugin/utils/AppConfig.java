@@ -25,8 +25,8 @@ public final class AppConfig {
 
   private static AppConfig instance;
 
-  private String dataLocation = "/sdcard/Anno";
-  private String screenshotDirName = "screenshot";
+  private String dataLocation;
+  private String screenshotDirName;
 
   private AppConfig(Context context) {
     load(context, SETTING);
@@ -50,8 +50,11 @@ public final class AppConfig {
           prop.getProperty("data_location")).getAbsolutePath();
       screenshotDirName = prop.getProperty("screenshot_dir");
     } catch (Exception e) {
-      Log.e(TAG, "Load " + path + " error.", e);
+      Log.e(TAG, "Load " + path + " error.");
       Log.i(TAG, "Application will use default setting.");
+      dataLocation = new File(Environment.getExternalStorageDirectory(), "Anno")
+          .getAbsolutePath();
+      screenshotDirName = "screenshot";
     } finally {
       if (in != null) {
         try {
