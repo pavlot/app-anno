@@ -12,10 +12,12 @@ import org.json.JSONObject;
 import co.usersource.anno.network.HttpConnector;
 import co.usersource.anno.network.IHttpConnectorAuthHandler;
 import co.usersource.anno.network.IHttpRequestHandler;
+import co.usersource.annoplugin.model.AnnoContentProvider;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
@@ -35,8 +37,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public static final String JSON_REQUEST_PARAM_NAME = "jsonData";
 	
 	private static final String TAG = "AnnoSyncAdapter";
+	
 	private ContentValues m_valuesForUpdate;
 	private HttpConnector httpConnector;
+	private String lastUpdateDate;
 
        
     /**
@@ -92,13 +96,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	private void performSyncRoutines() {
 		Log.v(TAG, "Start synchronization (performSyncRoutines)");
-		JSONObject request = new JSONObject();
-		try {
+	try {
 			
-			request = getLocalData();
 			final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair(
-					SyncAdapter.JSON_REQUEST_PARAM_NAME, request.toString()));
+					SyncAdapter.JSON_REQUEST_PARAM_NAME, getLocalData().toString()));
 			getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
 				
 				public void onRequest(JSONObject response) {
@@ -112,12 +114,27 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		}
 	}
     
-    /**
-     * This function reads information from local database.
-     */
+	/**
+	 * This function reads information from local database.
+	 * @return local data in json format 
+	 */
     private JSONObject getLocalData()
     {
-    	return new JSONObject();
+    	Log.v("SGADTRACE", "Start getLocalData");
+    	RequestCreater request = new RequestCreater();
+    	ContentResolver contentProvider = getContext().getContentResolver();
+    	Cursor localData = contentProvider.query(AnnoContentProvider.COMMENT_PATH_URI, null, null, null, null);
+    	
+    	if(null != localData)
+    	{
+    		for(boolean isDataExist = localData.moveToFirst(); isDataExist; isDataExist = localData.moveToNext())
+    		{
+    			request.addObject(localData);
+    		}
+    	}
+    	request.addUpdateDate(lastUpdateDate);
+    	
+    	return request.getRequest();
     }
     
     
@@ -144,7 +161,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	 *            - json object with data from server
 	 */
 	private void updateLocalDatabase(JSONObject data) {
-		
+		Log.v("SGADTRACE", data.toString());
 	}
 
 	/**
