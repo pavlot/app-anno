@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
+
 import android.database.Cursor;
 
 public class RequestCreater {
@@ -17,6 +19,7 @@ public class RequestCreater {
 	
 	public static final String JSON_UPDATED_OBJECTS = "updatedObjects";
 	public static final String JSON_TIME_STAMP = "lastUpdateDate";
+	public static final String JSON_OBJECT_KEY = "object_key";
 	
 	JSONObject request;
 	JSONArray objects;
@@ -32,12 +35,20 @@ public class RequestCreater {
 		
 		try {
 
-			object.put(JSON_CLIENT_ID, data.getString(data.getColumnIndex("_id")));
-			object.put(JSON_COMMENT, data.getString(data.getColumnIndex("comment")));
-			object.put(JSON_SCREEN_KEY, data.getString(data.getColumnIndex("screenshot_key")));
-			object.put(JSON_X, data.getString(data.getColumnIndex("x")));
-			object.put(JSON_Y, data.getString(data.getColumnIndex("y")));
-			object.put(JSON_DIRECTION, data.getString(data.getColumnIndex("direction")));
+			object.put(JSON_CLIENT_ID, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_ID)));
+			object.put(JSON_COMMENT, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_COMMENT)));
+			object.put(JSON_SCREEN_KEY, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY)));
+			object.put(JSON_X, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_X)));
+			object.put(JSON_Y, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_Y)));
+			object.put(JSON_DIRECTION, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_DIRECTION)));
+			object.put(JSON_TIME_STAMP, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_TIMESTAMP)));
+			
+			if(data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_OBJECT_KEY)) == null)	{
+				object.put(JSON_OBJECT_KEY, JSONObject.NULL);
+				
+			}else{
+				object.put(JSON_OBJECT_KEY, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_OBJECT_KEY)));
+			}
 			
 			objects.put(object);
 			
