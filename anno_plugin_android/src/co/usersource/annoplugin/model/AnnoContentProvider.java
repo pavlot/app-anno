@@ -119,8 +119,10 @@ public class AnnoContentProvider extends ContentProvider {
     int code = URI_MATCHER.match(uri);
     switch (code) {
     case SINGLE_COMMENT_CODE:
+    	String[] args = {uri.getLastPathSegment()};
+    	String selectionExpr = TableCommentFeedbackAdapter.COL_ID + " = ?";
       return annoSQLiteOpenHelper.getTableCommentFeedbackAdapter().update(
-          values, selection, selectionArgs);
+          values, selectionExpr, args);
     default:
       handleUnknownUri(uri, code);
     }

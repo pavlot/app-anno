@@ -2,8 +2,11 @@ package co.usersource.anno.sync;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,13 +15,10 @@ import org.json.JSONObject;
 import co.usersource.anno.network.HttpConnector;
 import co.usersource.anno.network.IHttpConnectorAuthHandler;
 import co.usersource.anno.network.IHttpRequestHandler;
-import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
-import co.usersource.annoplugin.model.AnnoContentProvider;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
@@ -42,6 +42,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	private ContentValues m_valuesForUpdate;
 	private HttpConnector httpConnector;
 	private String lastUpdateDate;
+	private RequestCreater request;
+	private DatabaseUpdater db;
 
        
     /**
@@ -51,7 +53,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     {
         super(context, autoInitialize);
         m_valuesForUpdate = new ContentValues();
-        
+        db = new DatabaseUpdater(context.getContentResolver());
     }
 
 	/**
@@ -98,14 +100,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	private void performSyncRoutines() {
 		Log.v(TAG, "Start synchronization (performSyncRoutines)");
 	try {
-			
+			request = getLocalData();
 			final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair(
-					SyncAdapter.JSON_REQUEST_PARAM_NAME, getLocalData().toString()));
+					SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getKeysRequest().toString()));
 			getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
 				
 				public void onRequest(JSONObject response) {
-					updateLocalDatabase(response);
+					updateLocalKeys(response);
 				}
 			});
 			
@@ -114,24 +116,50 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			e.printStackTrace();
 		}
 	}
+	
+	private void updateLocalKeys(JSONObject data)
+	{
+		
+		Iterator<Map.Entry<String, String>> items = request.addKeys(data).entrySet().iterator();
+		
+		while(items.hasNext())
+		{
+			Map.Entry<String, String> item = items.next();
+			db.setRecordKey((String)item.getKey(), (String)item.getValue());
+		}
+	
+		try {
+			
+			final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair(
+					SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getRequest().toString()));
+			getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
+				
+				public void onRequest(JSONObject response) {
+					updateLocalDatabase(response);
+				}
+			});
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
     
 	/**
 	 * This function reads information from local database.
 	 * @return local data in json format 
 	 */
-    private JSONObject getLocalData()
+    private RequestCreater getLocalData()
     {
-    	Log.v("SGADTRACE", "Start getLocalData");
-    	String selection = null;
+    	Log.v(TAG, "Start getLocalData");
+    	
     	RequestCreater request = new RequestCreater();
-    	ContentResolver contentProvider = getContext().getContentResolver();
-    	
-    	if(null != lastUpdateDate){
-    		selection = TableCommentFeedbackAdapter.COL_TIMESTAMP + " > '" + lastUpdateDate + "'";
-    	}
     	request.addUpdateDate(lastUpdateDate);
-    	
-    	Cursor localData = contentProvider.query(AnnoContentProvider.COMMENT_PATH_URI, null, selection, null, null);
+
+    	Cursor localData = db.getItemsAfterDate(lastUpdateDate);
     	
     	if(null != localData)
     	{
@@ -141,8 +169,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     		}
     	}
     	
-    	
-    	return request.getRequest();
+    	return request;
     }
     
     

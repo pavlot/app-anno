@@ -77,9 +77,8 @@ public class TableCommentFeedbackAdapter extends AbstractTableAdapter {
   @Override
   public int update(ContentValues values, String selection,
       String[] selectionArgs) {
-
-    throw new UnsupportedOperationException(
-        "TableCommentFeedbackAdapter.update Not Implemented.");
+    SQLiteDatabase database = this.sqliteOpenHelper.getWritableDatabase();
+    return database.update(getTableName(), values, selection, selectionArgs);
   }
 
   @Override
