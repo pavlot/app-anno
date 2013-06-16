@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import co.usersource.anno.network.HttpConnector;
 import co.usersource.anno.network.IHttpConnectorAuthHandler;
 import co.usersource.anno.network.IHttpRequestHandler;
+import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
 import co.usersource.annoplugin.model.AnnoContentProvider;
 
 import android.accounts.Account;
@@ -121,9 +122,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private JSONObject getLocalData()
     {
     	Log.v("SGADTRACE", "Start getLocalData");
+    	String selection = null;
     	RequestCreater request = new RequestCreater();
     	ContentResolver contentProvider = getContext().getContentResolver();
-    	Cursor localData = contentProvider.query(AnnoContentProvider.COMMENT_PATH_URI, null, null, null, null);
+    	
+    	if(null != lastUpdateDate){
+    		selection = TableCommentFeedbackAdapter.COL_TIMESTAMP + " > '" + lastUpdateDate + "'";
+    	}
+    	request.addUpdateDate(lastUpdateDate);
+    	
+    	Cursor localData = contentProvider.query(AnnoContentProvider.COMMENT_PATH_URI, null, selection, null, null);
     	
     	if(null != localData)
     	{
@@ -132,7 +140,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     			request.addObject(localData);
     		}
     	}
-    	request.addUpdateDate(lastUpdateDate);
+    	
     	
     	return request.getRequest();
     }
@@ -161,7 +169,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	 *            - json object with data from server
 	 */
 	private void updateLocalDatabase(JSONObject data) {
-		Log.v("SGADTRACE", data.toString());
+		
+		Log.v(TAG, data.toString());
+		try {
+			lastUpdateDate = data.getString(RequestCreater.JSON_TIME_STAMP);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
