@@ -59,3 +59,18 @@ class FeedbackComment(AnnoSyncEntity):
                 result.append(str(db.Key.from_path('FeedbackComment', idsRange[item])))
         
         return result
+    
+    def getCommentsAfterDate(self, date):
+        model = self.all()
+        model.filter("updateTimestamp > ", datetime.strptime(date, "%Y-%m-%d %H:%M:%S:%f"))
+        model.filter("userId = ", self.userId)
+        result = []
+        item = {}
+        
+        for datastoreObject in model.run():
+            item = db.to_dict(datastoreObject)
+            item[self.JSON_OBJECT_KEY] = str(datastoreObject.key())
+            result.append(item.copy())
+        
+        return result
+            

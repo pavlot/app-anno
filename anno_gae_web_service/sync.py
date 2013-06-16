@@ -48,11 +48,23 @@ class AnnoSync(webapp2.RequestHandler):
         comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
         data[AnnoSync.JSON_OBJECTS_KEYS] = comment.generateKeys(data[AnnoSync.JSON_KEYS_COUNT])
         
+        
     def updateData(self, data):
         updatedObjects = data[AnnoSync.JSON_UPDATED_OBJECT]
         for item in updatedObjects:
             comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
             comment.createComment(item)
+
+        data[AnnoSync.JSON_UPDATED_OBJECT] = []
+        serverObjects = self.getServerObjects(data)
+        for item in serverObjects: 
+            data[AnnoSync.JSON_UPDATED_OBJECT].append(item.copy())
+        
+        
+            
+    def getServerObjects(self, data):
+        comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
+        return comment.getCommentsAfterDate(data[AnnoSync.JSON_TIMESTAMP])
         
         
     

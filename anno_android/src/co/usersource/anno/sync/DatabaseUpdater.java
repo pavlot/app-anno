@@ -38,5 +38,12 @@ public class DatabaseUpdater {
 		Cursor result = dbContext.query(AnnoContentProvider.COMMENT_PATH_URI, null, selection, null, null);
 		return result;
 	}
+	
+	public void createNewRecord(ContentValues record)
+	{
+		if(dbContext.insert(AnnoContentProvider.COMMENT_PATH_URI, record) == null){
+			Log.v(TAG, "Can't insert a new item" + record.toString());
+		}
+	}
 
 }

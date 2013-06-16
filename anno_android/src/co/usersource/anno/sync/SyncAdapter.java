@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import co.usersource.anno.network.HttpConnector;
 import co.usersource.anno.network.IHttpConnectorAuthHandler;
 import co.usersource.anno.network.IHttpRequestHandler;
+import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -174,22 +175,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     
     
 	/**
-	 * Generate json object from cursor
-	 * 
-	 * @param data
-	 *            - cursor with data
-	 * @param type
-	 *            - type of object witch should be generated
-	 * @param updatedObjects
-	 *            -
-	 * @return - json data for object
-	 */
-	public JSONArray createJSONData(Cursor data, String type,
-			JSONArray updatedObjects) {
-		return new JSONArray();
-	}
-
-	/**
 	 * Update local database with data from server
 	 * 
 	 * @param data
@@ -199,7 +184,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		
 		Log.v(TAG, data.toString());
 		try {
+			
 			lastUpdateDate = data.getString(RequestCreater.JSON_TIME_STAMP);
+			JSONArray updatedObjects = data.getJSONArray(RequestCreater.JSON_UPDATED_OBJECTS);
+			
+			for(int i = 0; i < updatedObjects.length(); ++i)
+			{
+				addFieldToUpdate(TableCommentFeedbackAdapter.COL_COMMENT, updatedObjects.getJSONObject(i), null);
+				addFieldToUpdate(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY, updatedObjects.getJSONObject(i), null);
+				addFieldToUpdate(TableCommentFeedbackAdapter.COL_POSITION_X, updatedObjects.getJSONObject(i), null);
+				addFieldToUpdate(TableCommentFeedbackAdapter.COL_POSITION_Y, updatedObjects.getJSONObject(i), null);
+				addFieldToUpdate(TableCommentFeedbackAdapter.COL_DIRECTION, updatedObjects.getJSONObject(i), null);
+				db.createNewRecord(m_valuesForUpdate);
+			}
+			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
