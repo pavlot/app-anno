@@ -28,19 +28,25 @@ public class RequestCreater {
 	public static final String JSON_REQUEST_TYPE = "request_type";
 	public static final String JSON_REQUEST_TYPE_KEYS = "generateKeys";
 	public static final String JSON_REQUEST_TYPE_UPDATE = "updateData";
+	public static final String JSON_REQUEST_TYPE_SERVER_DATA = "getServerData";
 	
 	public static final String JSON_OBJECTS_KEYS = "objectsKeys";
 	
-	
+	int keysCount;
+	int currentItem;
+
 	JSONObject request;
 	JSONObject keysRequest;
-	int keysCount;
 	JSONArray objects;
 	
+	String requestTimestamp;
+
 	public RequestCreater() {
+		keysCount = 0;
+		currentItem = 0;
+
 		request = new JSONObject();
 		keysRequest = new JSONObject();
-		keysCount = 0;
 		objects = new JSONArray();
 	}
 	
@@ -49,7 +55,6 @@ public class RequestCreater {
 		JSONObject object = new JSONObject();
 		
 		try {
-
 			object.put(JSON_CLIENT_ID, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_ID)));
 			object.put(JSON_COMMENT, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_COMMENT)));
 			object.put(JSON_SCREEN_KEY, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY)));
@@ -98,18 +103,11 @@ public class RequestCreater {
 	
 	public void addUpdateDate(String date)
 	{
-		try {
-			if(null == date){
-				request.put(JSON_TIME_STAMP, "2000-01-01 00:00:00:00");
-			}
-			else{
-				request.put(JSON_TIME_STAMP, date);
-			}
-			
-			
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(null == date){
+			requestTimestamp = "2000-01-01 00:00:00:00";
+		}
+		else{
+			requestTimestamp = date;
 		}
 	}
 	
@@ -143,6 +141,38 @@ public class RequestCreater {
 			e.printStackTrace();
 		}
 		return keysRequest;
+	}
+
+	public JSONObject getNext()
+	{
+		JSONObject result = null;
+		if( currentItem < objects.length() )
+		{
+			result = new JSONObject();
+			try {
+				result.put(JSON_UPDATED_OBJECTS, objects.getJSONObject(currentItem));
+				result.put(JSON_REQUEST_TYPE, JSON_REQUEST_TYPE_UPDATE);
+				++currentItem;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return result;
+	}
+
+	public JSONObject getServerDataRequest(){
+		JSONObject result= new JSONObject();
+		try {
+			result.put(JSON_REQUEST_TYPE, JSON_REQUEST_TYPE_SERVER_DATA);
+			result.put(JSON_TIME_STAMP, requestTimestamp);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 }

@@ -29,6 +29,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+
 /**
  * This class implements synchronization with server.
  * 
@@ -102,6 +103,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		Log.v(TAG, "Start synchronization (performSyncRoutines)");
 	try {
 			request = getLocalData();
+			
 			final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair(
 					SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getKeysRequest().toString()));
@@ -120,7 +122,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	
 	private void updateLocalKeys(JSONObject data)
 	{
-		
 		Iterator<Map.Entry<String, String>> items = request.addKeys(data).entrySet().iterator();
 		
 		while(items.hasNext())
@@ -128,18 +129,33 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			Map.Entry<String, String> item = items.next();
 			db.setRecordKey((String)item.getKey(), (String)item.getValue());
 		}
+		sendItems();
+	}
 	
+	
+	public void sendItems()
+	{
+		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		JSONObject req = request.getNext();
 		try {
-			
-			final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(
-					SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getRequest().toString()));
-			getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
+			if(req != null)
+			{
+				params.add(new BasicNameValuePair(SyncAdapter.JSON_REQUEST_PARAM_NAME, req.toString()));
+				getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
+					public void onRequest(JSONObject response) {
+							sendItems();
+						}
+					});
+			}
+			else{
+				params.add(new BasicNameValuePair(SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getServerDataRequest().toString()));
+				getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
+					public void onRequest(JSONObject response) {
+							updateLocalDatabase(response);
+						}
+					});
 				
-				public void onRequest(JSONObject response) {
-					updateLocalDatabase(response);
-				}
-			});
+			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -148,6 +164,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			e.printStackTrace();
 		}
 	}
+	
     
 	/**
 	 * This function reads information from local database.
@@ -159,7 +176,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     	
     	RequestCreater request = new RequestCreater();
     	request.addUpdateDate(lastUpdateDate);
-
     	Cursor localData = db.getItemsAfterDate(lastUpdateDate);
     	
     	if(null != localData)

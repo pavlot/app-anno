@@ -20,6 +20,7 @@ class AnnoSync(webapp2.RequestHandler):
     JSON_REQUEST_TYPE = "request_type"
     JSON_REQUEST_TYPE_KEYS = "generateKeys"
     JSON_REQUEST_TYPE_UPDATE =  "updateData"
+    JSON_REQUEST_TYPE_SERVER_DATA = "getServerData"
     
     JSON_KEYS_COUNT = "keys_count";
     JSON_OBJECTS_KEYS = "objectsKeys";
@@ -36,8 +37,10 @@ class AnnoSync(webapp2.RequestHandler):
         
         if recivedJson[AnnoSync.JSON_REQUEST_TYPE] == AnnoSync.JSON_REQUEST_TYPE_KEYS:
             self.generateKeys(recivedJson)
-        else:
+        elif recivedJson[AnnoSync.JSON_REQUEST_TYPE] ==  AnnoSync.JSON_REQUEST_TYPE_UPDATE:
             self.updateData(recivedJson)
+        elif recivedJson[AnnoSync.JSON_REQUEST_TYPE] ==  AnnoSync.JSON_REQUEST_TYPE_SERVER_DATA:
+            self.getServerData(recivedJson)
             
         recivedJson[AnnoSync.JSON_TIMESTAMP] = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
         answer = json.dumps(recivedJson, cls = AnnoJsonEncoder)
@@ -50,25 +53,20 @@ class AnnoSync(webapp2.RequestHandler):
         
         
     def updateData(self, data):
-        updatedObjects = data[AnnoSync.JSON_UPDATED_OBJECT]
-        for item in updatedObjects:
-            comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
-            comment.createComment(item)
+        comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
+        comment.createComment(data[AnnoSync.JSON_UPDATED_OBJECT])
 
+    def getServerData(self, data):
         data[AnnoSync.JSON_UPDATED_OBJECT] = []
         serverObjects = self.getServerObjects(data)
         for item in serverObjects: 
             data[AnnoSync.JSON_UPDATED_OBJECT].append(item.copy())
-        
-        
+       
             
     def getServerObjects(self, data):
         comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
         return comment.getCommentsAfterDate(data[AnnoSync.JSON_TIMESTAMP])
         
-        
-    
-    
     
     
     
