@@ -173,8 +173,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private RequestCreater getLocalData()
     {
     	Log.v(TAG, "Start getLocalData");
-    	
-    	RequestCreater request = new RequestCreater();
+    	RequestCreater request = new RequestCreater(getContext());
     	request.addUpdateDate(lastUpdateDate);
     	Cursor localData = db.getItemsAfterDate(lastUpdateDate);
     	

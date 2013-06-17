@@ -2,14 +2,19 @@ package co.usersource.anno.sync;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import co.usersource.annoplugin.datastore.FileImageManage;
 import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
+import co.usersource.annoplugin.utils.AppConfig;
 
+import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 
 public class RequestCreater {
 	
@@ -39,12 +44,16 @@ public class RequestCreater {
 	JSONObject keysRequest;
 	JSONArray objects;
 	
+	Vector<Bitmap> images;
+	
 	String requestTimestamp;
+	
+	Context context;
 
-	public RequestCreater() {
+	public RequestCreater(Context ctx) {
 		keysCount = 0;
 		currentItem = 0;
-
+		context = ctx;
 		request = new JSONObject();
 		keysRequest = new JSONObject();
 		objects = new JSONArray();
@@ -53,11 +62,13 @@ public class RequestCreater {
 	public void addObject(Cursor data)
 	{
 		JSONObject object = new JSONObject();
+		FileImageManage imageManager = new FileImageManage(context, AppConfig.getInstance(context));
 		
 		try {
 			object.put(JSON_CLIENT_ID, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_ID)));
 			object.put(JSON_COMMENT, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_COMMENT)));
 			object.put(JSON_SCREEN_KEY, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY)));
+			images.add(imageManager.loadImage(object.getString(JSON_SCREEN_KEY)));
 			object.put(JSON_X, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_X)));
 			object.put(JSON_Y, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_Y)));
 			object.put(JSON_DIRECTION, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_DIRECTION)));
@@ -174,5 +185,12 @@ public class RequestCreater {
 
 		return result;
 	}
-
+	
+	public Bitmap getImage(){
+		Bitmap result = null;
+		if(currentItem < images.size()){
+			result = images.get(currentItem);
+		}
+		return result;
+	}
 }
