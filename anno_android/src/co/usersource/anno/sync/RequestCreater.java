@@ -1,8 +1,8 @@
 package co.usersource.anno.sync;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +15,7 @@ import co.usersource.annoplugin.utils.AppConfig;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.util.Base64;
 
 public class RequestCreater {
 	
@@ -35,6 +36,8 @@ public class RequestCreater {
 	public static final String JSON_REQUEST_TYPE_UPDATE = "updateData";
 	public static final String JSON_REQUEST_TYPE_SERVER_DATA = "getServerData";
 	
+	public static final String JSON_IMAGE = "image";
+	
 	public static final String JSON_OBJECTS_KEYS = "objectsKeys";
 	
 	int keysCount;
@@ -43,8 +46,6 @@ public class RequestCreater {
 	JSONObject request;
 	JSONObject keysRequest;
 	JSONArray objects;
-	
-	Vector<Bitmap> images;
 	
 	String requestTimestamp;
 	
@@ -62,13 +63,15 @@ public class RequestCreater {
 	public void addObject(Cursor data)
 	{
 		JSONObject object = new JSONObject();
-		FileImageManage imageManager = new FileImageManage(context, AppConfig.getInstance(context));
+		
 		
 		try {
 			object.put(JSON_CLIENT_ID, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_ID)));
 			object.put(JSON_COMMENT, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_COMMENT)));
 			object.put(JSON_SCREEN_KEY, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY)));
-			images.add(imageManager.loadImage(object.getString(JSON_SCREEN_KEY)));
+			
+			
+
 			object.put(JSON_X, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_X)));
 			object.put(JSON_Y, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_POSITION_Y)));
 			object.put(JSON_DIRECTION, data.getString(data.getColumnIndex(TableCommentFeedbackAdapter.COL_DIRECTION)));
@@ -143,10 +146,8 @@ public class RequestCreater {
 	public JSONObject getKeysRequest()
 	{
 		try {
-		
 			keysRequest.put(JSON_KEYS_COUNT, keysCount);
 			keysRequest.put(JSON_REQUEST_TYPE, JSON_REQUEST_TYPE_KEYS);
-		
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -161,7 +162,13 @@ public class RequestCreater {
 		{
 			result = new JSONObject();
 			try {
-				result.put(JSON_UPDATED_OBJECTS, objects.getJSONObject(currentItem));
+				JSONObject item = objects.getJSONObject(currentItem);
+				FileImageManage imageManager = new FileImageManage(context, AppConfig.getInstance(context));
+				Bitmap img = imageManager.loadImage(item.getString(JSON_SCREEN_KEY));
+				ByteArrayOutputStream imgBytes = new ByteArrayOutputStream();
+				img.compress(Bitmap.CompressFormat.PNG, 100, imgBytes);
+				item.put(JSON_IMAGE, Base64.encodeToString(imgBytes.toByteArray(), Base64.DEFAULT));
+				result.put(JSON_UPDATED_OBJECTS, item);
 				result.put(JSON_REQUEST_TYPE, JSON_REQUEST_TYPE_UPDATE);
 				++currentItem;
 			} catch (JSONException e) {
@@ -186,11 +193,4 @@ public class RequestCreater {
 		return result;
 	}
 	
-	public Bitmap getImage(){
-		Bitmap result = null;
-		if(currentItem < images.size()){
-			result = images.get(currentItem);
-		}
-		return result;
-	}
 }

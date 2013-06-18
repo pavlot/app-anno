@@ -16,6 +16,7 @@ class FeedbackComment(AnnoSyncEntity):
     JSON_DIRECTION = "direction"
     JSON_OBJECT_KEY = "object_key"
     JSON_UPDATE_TIME = "lastUpdateTimestamp"
+    JSON_IMAGE = "image"
     
     '''
     classdocs
@@ -25,6 +26,7 @@ class FeedbackComment(AnnoSyncEntity):
     x = db.StringProperty()
     y = db.StringProperty()
     direction = db.StringProperty()
+    image = db.BlobProperty()
 
     def createComment(self, data):
         KeyForUpdate = db.get(data[self.JSON_OBJECT_KEY])
@@ -36,7 +38,10 @@ class FeedbackComment(AnnoSyncEntity):
     def addNewComment(self, data):
         self._key = db.get(data[self.JSON_OBJECT_KEY])
         for name, value in data.items():
-            setattr(self, name, value)
+            if name == self.JSON_IMAGE:
+                setattr(self, name, str(value))
+            else:
+                setattr(self, name, value)
         self.put()
         
     def updateExistingComment(self, KeyForUpdate, data):
@@ -46,6 +51,7 @@ class FeedbackComment(AnnoSyncEntity):
             KeyForUpdate.x =  data[self.JSON_COORD_X]
             KeyForUpdate.y =  data[self.JSON_COORD_Y]
             KeyForUpdate.direction =  data[self.JSON_DIRECTION]
+            KeyForUpdate.image =  data[self.JSON_IMAGE]
             KeyForUpdate.put()
     
     def generateKeys(self, count):
