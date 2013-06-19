@@ -133,6 +133,23 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			Map.Entry<String, String> item = items.next();
 			db.setRecordKey((String)item.getKey(), (String)item.getValue());
 		}
+		
+		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair(SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getServerDataRequest().toString()));
+		try {
+			getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
+				public void onRequest(JSONObject response) {
+						updateLocalDatabase(response);
+					}
+				});
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		sendItems();
 	}
 	
@@ -150,15 +167,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 							sendItems();
 						}
 					});
-			}
-			else{
-				params.add(new BasicNameValuePair(SyncAdapter.JSON_REQUEST_PARAM_NAME, request.getServerDataRequest().toString()));
-				getHttpConnector().SendRequest("/sync", params, new IHttpRequestHandler() {
-					public void onRequest(JSONObject response) {
-							updateLocalDatabase(response);
-						}
-					});
-				
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -221,6 +229,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 						                    updatedObjects.getJSONObject(i).getString(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY));
 				db.createNewRecord(m_valuesForUpdate);
 			}
+			
+			sendItems();
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
