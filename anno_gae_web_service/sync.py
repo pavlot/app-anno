@@ -55,6 +55,7 @@ class AnnoSync(webapp2.RequestHandler):
     def updateData(self, data):
         comment = FeedbackComment(user = users.get_current_user(), userId = users.get_current_user().user_id())
         comment.createComment(data[AnnoSync.JSON_UPDATED_OBJECT])
+        data[AnnoSync.JSON_UPDATED_OBJECT] = []
 
     def getServerData(self, data):
         data[AnnoSync.JSON_UPDATED_OBJECT] = []
@@ -70,9 +71,5 @@ class AnnoSync(webapp2.RequestHandler):
     
     
     
-    
-    
-    
-    
-    
+   
     

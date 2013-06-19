@@ -15,7 +15,9 @@ import org.json.JSONObject;
 import co.usersource.anno.network.HttpConnector;
 import co.usersource.anno.network.IHttpConnectorAuthHandler;
 import co.usersource.anno.network.IHttpRequestHandler;
+import co.usersource.annoplugin.datastore.FileImageManage;
 import co.usersource.annoplugin.datastore.TableCommentFeedbackAdapter;
+import co.usersource.annoplugin.utils.AppConfig;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -24,7 +26,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -202,6 +206,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			
 			lastUpdateDate = data.getString(RequestCreater.JSON_TIME_STAMP);
 			JSONArray updatedObjects = data.getJSONArray(RequestCreater.JSON_UPDATED_OBJECTS);
+			FileImageManage imgManager = new FileImageManage(getContext(), AppConfig.getInstance(getContext()));
+			byte[] decodeByte = null;
 			
 			for(int i = 0; i < updatedObjects.length(); ++i)
 			{
@@ -210,10 +216,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				addFieldToUpdate(TableCommentFeedbackAdapter.COL_POSITION_X, updatedObjects.getJSONObject(i), null);
 				addFieldToUpdate(TableCommentFeedbackAdapter.COL_POSITION_Y, updatedObjects.getJSONObject(i), null);
 				addFieldToUpdate(TableCommentFeedbackAdapter.COL_DIRECTION, updatedObjects.getJSONObject(i), null);
+				decodeByte = Base64.decode(updatedObjects.getJSONObject(i).getString(RequestCreater.JSON_IMAGE), 0);
+				imgManager.saveImageWithKey(BitmapFactory.decodeByteArray(decodeByte, 0, decodeByte.length), 
+						                    updatedObjects.getJSONObject(i).getString(TableCommentFeedbackAdapter.COL_SCREENSHOT_KEY));
 				db.createNewRecord(m_valuesForUpdate);
 			}
 			
 		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
