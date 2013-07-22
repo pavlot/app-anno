@@ -32,18 +32,23 @@ class AnnoSync(webapp2.RequestHandler):
         self.response.out.write(self.proceedRequest(self.request))
         
     def proceedRequest(self, request):
-        logging.info("Recived json string" + request.get(AnnoSync.JSON_REQUEST_PARAM_NAME));
-        recivedJson  = json.loads(request.get(AnnoSync.JSON_REQUEST_PARAM_NAME))
+        requestData = request.get(AnnoSync.JSON_REQUEST_PARAM_NAME)
+        answer = ''
+        logging.info("Recived json string" + requestData);
         
-        if recivedJson[AnnoSync.JSON_REQUEST_TYPE] == AnnoSync.JSON_REQUEST_TYPE_KEYS:
-            self.generateKeys(recivedJson)
-        elif recivedJson[AnnoSync.JSON_REQUEST_TYPE] ==  AnnoSync.JSON_REQUEST_TYPE_UPDATE:
-            self.updateData(recivedJson)
-        elif recivedJson[AnnoSync.JSON_REQUEST_TYPE] ==  AnnoSync.JSON_REQUEST_TYPE_SERVER_DATA:
-            self.getServerData(recivedJson)
+        if(None != requestData and requestData != ''):
+            recivedJson  = json.loads(requestData)
+
+            if recivedJson[AnnoSync.JSON_REQUEST_TYPE] == AnnoSync.JSON_REQUEST_TYPE_KEYS:
+                self.generateKeys(recivedJson)
+            elif recivedJson[AnnoSync.JSON_REQUEST_TYPE] ==  AnnoSync.JSON_REQUEST_TYPE_UPDATE:
+                self.updateData(recivedJson)
+            elif recivedJson[AnnoSync.JSON_REQUEST_TYPE] ==  AnnoSync.JSON_REQUEST_TYPE_SERVER_DATA:
+                self.getServerData(recivedJson)
+
+            recivedJson[AnnoSync.JSON_TIMESTAMP] = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
+            answer = json.dumps(recivedJson, cls = AnnoJsonEncoder)
             
-        recivedJson[AnnoSync.JSON_TIMESTAMP] = datetime.now().strftime("%Y-%m-%d %H:%M:%S:%f")
-        answer = json.dumps(recivedJson, cls = AnnoJsonEncoder)
         logging.info("Server answer" + answer )
         return answer
     
